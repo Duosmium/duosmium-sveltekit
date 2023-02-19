@@ -12,3 +12,6 @@ vite.config.ts.timestamp-*
 # IDE
 .idea
 .vscode
+
+# Testing database
+*.sqlite3

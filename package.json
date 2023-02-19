@@ -14,9 +14,14 @@
 		"format": "prettier --plugin-search-dir . --write ."
 	},
 	"dependencies": {
+		"better-sqlite3": "^8.1.0",
 		"dotenv": "^16.0.3",
 		"pg": "^8.9.0",
-		"sciolyff": "^0.11.0"
+		"pg-hstore": "^2.3.4",
+		"reflect-metadata": "^0.1.13",
+		"sciolyff": "^0.11.0",
+		"sequelize": "^6.28.0",
+		"sequelize-typescript": "^2.1.5"
 	},
 	"devDependencies": {
 		"@playwright/test": "^1.28.1",
@@ -24,6 +29,7 @@
 		"@sveltejs/kit": "^1.5.0",
 		"@typescript-eslint/eslint-plugin": "^5.45.0",
 		"@typescript-eslint/parser": "^5.45.0",
+		"@types/better-sqlite3": "^7.6.3",
 		"@types/pg": "^8.6.6",
 		"eslint": "^8.28.0",
 		"eslint-config-prettier": "^8.5.0",
