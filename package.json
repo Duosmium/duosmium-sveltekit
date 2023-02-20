@@ -3,7 +3,7 @@
 	"version": "0.0.1",
 	"private": true,
 	"scripts": {
-		"dev": "vite dev",
+		"dev": "vite dev --host",
 		"build": "vite build",
 		"preview": "vite preview",
 		"test": "playwright test",
@@ -15,7 +15,8 @@
 	},
 	"dependencies": {
 		"dotenv": "^16.0.3",
-		"pg": "^8.9.0",
+		"js-yaml": "^4.1.0",
+		"mongodb": "^5.0.1",
 		"sciolyff": "^0.11.0"
 	},
 	"devDependencies": {
@@ -24,7 +25,7 @@
 		"@sveltejs/kit": "^1.5.0",
 		"@typescript-eslint/eslint-plugin": "^5.45.0",
 		"@typescript-eslint/parser": "^5.45.0",
-		"@types/pg": "^8.6.6",
+		"@types/js-yaml": "^4.0.5",
 		"eslint": "^8.28.0",
 		"eslint-config-prettier": "^8.5.0",
 		"eslint-plugin-svelte3": "^4.0.0",
