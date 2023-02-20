@@ -1,32 +1,23 @@
 import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
-import { db } from '../../../lib/database';
-import { dump } from 'js-yaml';
+import { getResult, objectToYAML } from '../../../lib/helpers';
 
-const sciolyff = (await import("sciolyff")).default
-
-async function getInterpreter(rep: string) {
-	return new sciolyff.Interpreter(rep)
-}
-
-async function getJSON(duosmiumID: string) {
-	// const projection = { result: 1 };
-	const matches = await db.collection("results").find({duosmium_id: duosmiumID});
-	const numOfMatches = await db.collection("results").countDocuments({duosmium_id: duosmiumID})
-	if (numOfMatches === 0) {
-		return error(404, "No result found!")
+async function getResultWrapper(duosmiumID: string) {
+	let result;
+	try {
+		result = await getResult(duosmiumID)
+	} catch (e) {
+		throw error(404, "Result not found!")
 	}
-	const arr = await matches.toArray();
-	return arr[0]["result"];
+	return result
 }
 
 export const load = (({ params }) => {
-	const json = getJSON(params.slug).then(JSON.stringify);
-	const yaml = getJSON(params.slug).then(dump);
+	const json = getResultWrapper(params.slug).then(JSON.stringify);
+	const yaml = getResultWrapper(params.slug).then(objectToYAML);
 	return {
 		slug: params.slug,
 		json: json,
-		yaml: yaml,
-		interpreter: yaml.then(getInterpreter).toString()
+		yaml: yaml
 	};
 }) satisfies PageServerLoad;
