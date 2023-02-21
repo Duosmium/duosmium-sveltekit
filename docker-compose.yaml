@@ -6,11 +6,12 @@ services:
     ports:
       - "5173:5173"
     volumes:
-      - ./:/app
+      - ./:/app:Z
+      - /app/node_modules/
   mongo:
     image: mongo:latest
     volumes:
-      - mongodb:/data/db
+      - mongodb:/data/db:Z
     env_file:
       - .env
     environment:
