@@ -13,11 +13,9 @@ async function getResultWrapper(duosmiumID: string) {
 }
 
 export const load = (({ params }) => {
-	const json = getResultWrapper(params.slug).then(JSON.stringify);
 	const yaml = getResultWrapper(params.slug).then(objectToYAML);
 	return {
 		slug: params.slug,
-		json: json,
 		yaml: yaml,
 	};
 }) satisfies PageServerLoad;
