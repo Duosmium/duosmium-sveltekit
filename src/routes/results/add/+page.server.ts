@@ -1,6 +1,6 @@
 import type { Actions } from './$types';
 import { load } from 'js-yaml';
-import { db } from '../../../lib/database';
+import { db } from '$lib/database';
 
 async function handleUploadedFile(file: File) {
 	const yaml = await file.text();

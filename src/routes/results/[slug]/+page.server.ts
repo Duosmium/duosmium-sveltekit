@@ -1,6 +1,6 @@
 import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
-import { getResult, objectToYAML } from '../../../lib/helpers';
+import { getResult, objectToYAML } from '$lib/helpers';
 
 async function getResultWrapper(duosmiumID: string) {
 	let result;
@@ -18,6 +18,6 @@ export const load = (({ params }) => {
 	return {
 		slug: params.slug,
 		json: json,
-		yaml: yaml
+		yaml: yaml,
 	};
 }) satisfies PageServerLoad;

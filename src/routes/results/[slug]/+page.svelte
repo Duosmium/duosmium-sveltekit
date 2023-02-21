@@ -1,6 +1,8 @@
 <script lang="ts">
 	import type { PageServerData } from './$types';
+	import { getInterpreter } from '$lib/interpreter';
 	export let data: PageServerData;
+	export const interpreter = getInterpreter(data.yaml)
 </script>
 
 <style>
@@ -16,3 +18,4 @@ This page contains results for tournament <code>{data.slug}</code>. This page sh
 <pre>
 	{data.yaml}
 </pre>
+

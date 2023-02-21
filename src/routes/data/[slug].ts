@@ -1,4 +1,4 @@
-import { getResult, objectToYAML } from '../../lib/helpers';
+import { getResult, objectToYAML } from '$lib/helpers';
 import { error } from '@sveltejs/kit';
 
 async function getResultWrapper(duosmiumID: string) {
