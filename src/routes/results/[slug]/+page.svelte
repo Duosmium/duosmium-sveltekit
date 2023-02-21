@@ -15,7 +15,10 @@
 
 This page contains results for tournament <code>{data.slug}</code>. This page shows the standard results.
 
-<pre>
-	{data.yaml}
-</pre>
+<h2>Teams</h2>
+<ul>
+	{#each interpreter.teams as team}
+		<li>{team.school}{team.suffix ? " " + team.suffix : ""} from {team.city ? team.city + ", ": ""}{team.state}</li>
+	{/each}
+</ul>
 

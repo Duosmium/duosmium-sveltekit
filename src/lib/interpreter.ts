@@ -1,9 +1,7 @@
-import type { Interpreter } from 'sciolyff/dist/src/interpreter/types';
-
-const sciolyff = (await import("sciolyff")).default;
+import Interpreter from 'sciolyff/interpreter';
 
 export function getInterpreter(yaml: string) {
-	return new sciolyff.Interpreter(yaml);
+	return new Interpreter(yaml);
 }
 
 export function getEventNames(interpreter: Interpreter) {
