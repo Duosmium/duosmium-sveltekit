@@ -136,7 +136,7 @@ export function tournamentTitle(tInfo: Tournament) {
 	}
 }
 
-function tournamentTitleShort(tInfo: Tournament) {
+export function tournamentTitleShort(tInfo: Tournament) {
 	switch (tInfo.level) {
 		case "Nationals":
 			return "National Tournament";
