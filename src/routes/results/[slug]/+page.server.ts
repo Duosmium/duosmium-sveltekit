@@ -1,7 +1,7 @@
 import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
 import { getResult, objectToYAML } from '$lib/helpers';
-import { tournamentTitle } from '../../../lib/helpers';
+import { dateString, tournamentTitle, tournamentTitleShort } from '../../../lib/helpers';
 import { getInterpreter } from '../../../lib/interpreter';
 
 async function getResultWrapper(duosmiumID: string) {
@@ -16,10 +16,15 @@ async function getResultWrapper(duosmiumID: string) {
 
 export const load = (async ({ params }) => {
 	const yaml = getResultWrapper(params.slug).then(objectToYAML);
-	const title = tournamentTitle((await yaml.then(getInterpreter)).tournament)
+	const interpreter = await yaml.then(getInterpreter);
+	const title = tournamentTitle(interpreter.tournament);
+	const shortTitle = tournamentTitleShort(interpreter.tournament);
+	const date = dateString(interpreter);
 	return {
 		slug: params.slug,
 		yaml: yaml,
-		title: title
+		title: title,
+		shortTitle: shortTitle,
+		dateString: date,
 	};
 }) satisfies PageServerLoad;

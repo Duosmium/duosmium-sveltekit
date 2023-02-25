@@ -1,6 +1,7 @@
 import { db } from './database';
 import { dump } from 'js-yaml';
 import type { Team, Tournament, Interpreter } from 'sciolyff/dist/src/interpreter/types';
+import strftime from 'strftime';
 
 export async function getResult(duosmiumID: string): Promise<object> {
 	const matches = await db.collection("results").find({duosmium_id: duosmiumID});
@@ -191,7 +192,7 @@ function fullTeamName(team: Team) {
 }
 
 // from https://stackoverflow.com/questions/13627308/
-const ordinalize = (i: number) => {
+export const ordinalize = (i: number) => {
 	const j = i % 10,
 		k = i % 100;
 	if (j == 1 && k != 11) {
@@ -205,3 +206,15 @@ const ordinalize = (i: number) => {
 	}
 	return i + "th";
 };
+
+export function dateString(i: Interpreter): string {
+	if (i.tournament.startDate && i.tournament.endDate) {
+		let s = strftime("%A, %B %d, %Y", i.tournament.startDate);
+		const e = strftime("%A, %B %d, %Y", i.tournament.endDate);
+		if (s != e) {
+			s += " - " + e;
+		}
+		return s;
+	}
+	return 'Your date is broken.'
+}
