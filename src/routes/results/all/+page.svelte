@@ -9,8 +9,8 @@ This page lists all tournaments on the site in reverse chronological order.
 
 <ul>
 	{#each data.names as name, i}
-	<li>
-		<a href='/results/{data.ids[i]}'>{name}</a>
-	</li>
+		<li>
+			<a href="/results/{data.ids[i]}">{name}</a>
+		</li>
 	{/each}
 </ul>

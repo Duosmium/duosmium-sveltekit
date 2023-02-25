@@ -1,25 +1,25 @@
-import { MongoClient } from "mongodb";
-import dotenv from "dotenv";
+import { MongoClient } from 'mongodb';
+import dotenv from 'dotenv';
 
 dotenv.config();
 
 let dbURI;
 if (process.env.DB_HOST === undefined) {
-	throw new Error("Database host not specified!");
+	throw new Error('Database host not specified!');
 } else if (process.env.DB_USERNAME === undefined) {
-	throw new Error("Database username not specified!");
+	throw new Error('Database username not specified!');
 } else {
 	const dbHost = process.env.DB_HOST;
 	const dbUsername = process.env.DB_USERNAME;
 	const dbPassword = process.env.DB_PASSWORD ? process.env.DB_PASSWORD : '';
 	const dbPort = process.env.DB_PORT ? Number(process.env.DB_PORT) : 27017;
-	dbURI = `mongodb://${dbUsername}:${dbPassword}@${dbHost}:${dbPort}/?retryWrites=true&w=majority`
+	dbURI = `mongodb://${dbUsername}:${dbPassword}@${dbHost}:${dbPort}/?retryWrites=true&w=majority`;
 }
 
 const client = new MongoClient(dbURI);
 await client.connect();
 
 if (process.env.DB_DATABASE === undefined) {
-	throw new Error("Database not specified!");
+	throw new Error('Database not specified!');
 }
-export const db = client.db(process.env.DB_DATABASE) // select database
+export const db = client.db(process.env.DB_DATABASE); // select database
