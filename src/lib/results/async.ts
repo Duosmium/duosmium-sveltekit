@@ -5,7 +5,7 @@ import { dump, load } from 'js-yaml';
 import Interpreter from 'sciolyff/interpreter';
 import { error } from '@sveltejs/kit';
 import { generateFilename } from './helpers';
-import { addSchoolsFromInterpreter } from '../schools/async';
+import { addSchoolsFromInterpreter } from '$lib/schools/async';
 import type { ObjectId } from 'mongodb';
 
 export async function getResultByDuosmiumID(duosmiumID: string): Promise<object> {
@@ -50,15 +50,15 @@ export async function getAllResults(): Promise<object> {
 export async function handleUploadedYAML(file: File) {
 	const yaml = await file.text();
 	const obj = load(yaml);
-	await addOrReplaceResult(yaml, obj);
+	await addResult(yaml, obj);
 }
 
 export async function handlePOSTedJSON(json: object) {
 	const yaml = dump(json);
-	await addOrReplaceResult(yaml, json);
+	await addResult(yaml, json);
 }
 
-async function addOrReplaceResult(yaml: string, obj: object | unknown) {
+async function addResult(yaml: string, obj: object | unknown) {
 	let interpreter;
 	try {
 		interpreter = new Interpreter(yaml);
@@ -67,7 +67,9 @@ async function addOrReplaceResult(yaml: string, obj: object | unknown) {
 	}
 	const fileName = generateFilename(interpreter);
 	const collection = db.collection('results');
+	collection.createIndex({ duosmium_id: 1 }, { unique: true });
 	if (await resultExistsByDuosmiumID(fileName)) {
+		// throw error(400, 'This result already exists!');
 		await collection.updateOne(
 			{
 				duosmium_id: fileName

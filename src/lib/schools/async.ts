@@ -5,6 +5,7 @@ import Interpreter from 'sciolyff/interpreter';
 import { error } from '@sveltejs/kit';
 import { fullSchoolName } from './helpers';
 import type { ObjectId } from 'mongodb';
+import { generateFilename } from '$lib/results/helpers';
 
 export async function getSchoolByName(
 	name: string,
@@ -24,6 +25,10 @@ export async function schoolExistsByName(
 	city: string | null,
 	state: string
 ): Promise<boolean> {
+	console.log(fullSchoolName(name, city, state));
+	console.log(
+		await db.collection('schools').countDocuments({ name: name, city: city, state: state })
+	);
 	return (
 		(await db.collection('schools').countDocuments({ name: name, city: city, state: state })) > 0
 	);
@@ -72,7 +77,9 @@ export async function getAllSchools(): Promise<object> {
 
 export async function addSchool(name: string, city: string | null, state: string) {
 	const collection = db.collection('schools');
-	if (await schoolExistsByName(name, city, state)) {
+	collection.createIndex({ full_name: 1 }, { unique: true });
+	const schoolExists = await schoolExistsByName(name, city, state);
+	if (schoolExists) {
 		throw error(400, 'This school already exists!');
 	} else {
 		const fullName = fullSchoolName(name, city, state);
@@ -80,13 +87,15 @@ export async function addSchool(name: string, city: string | null, state: string
 			name: name,
 			city: city,
 			state: state,
-			full_name: fullName
+			full_name: fullName,
+			tournaments: []
 		});
 		return fullName;
 	}
 }
 
 export async function addSchoolsFromInterpreter(interpreter: Interpreter) {
+	const duosmiumID = generateFilename(interpreter);
 	for (const team of interpreter.teams) {
 		const name = team.school;
 		const city = team.city;
@@ -94,9 +103,12 @@ export async function addSchoolsFromInterpreter(interpreter: Interpreter) {
 		try {
 			const school = await addSchool(name, city, state);
 			console.log(`Added ${school}`);
+			await addTournamentToSchool(school, duosmiumID);
 		} catch (e) {
 			// do nothing
-			console.log(`Did not add ${fullSchoolName(name, city, state)} because it already exists`);
+			const school = fullSchoolName(name, city, state);
+			await addTournamentToSchool(school, duosmiumID);
+			console.log(`Did not add ${school} because it already exists`);
 		}
 	}
 }
@@ -105,4 +117,32 @@ export async function handlePOSTedJSON(json: object) {
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore
 	await addSchool(json['name'], json['city'], json['state']);
+}
+
+async function addTournamentToSchool(school: string, duosmiumID: string) {
+	const collection = db.collection('schools');
+	const schoolExists = await schoolExistsByFullName(school);
+	if (!schoolExists) {
+		throw error(400, 'This school does not already exist!');
+	} else {
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
+		let tournaments: string[] = (await getSchoolByFullName(school))['tournaments'];
+		if (!tournaments.includes(duosmiumID)) {
+			tournaments.push(duosmiumID);
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
+			tournaments = tournaments.sort((a: string, b: string) => (a > b ? 1 : -1));
+			collection.updateOne(
+				{
+					full_name: school
+				},
+				{
+					$set: {
+						tournaments: tournaments
+					}
+				}
+			);
+		}
+	}
 }
