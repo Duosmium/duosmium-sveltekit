@@ -1,7 +1,6 @@
 import type { ParamMatcher } from '@sveltejs/kit';
+import { DUOSMIUM_ID_REGEX } from '$lib/helpers';
 
 export const match = ((param) => {
-	return /(19|20)\d{2}-[01]\d-[0-3]\d_([\w]+_invitational|([ns]?[A-Z]{2})_[\w]+_regional|([ns]?[A-Z]{2})_states|nationals)_(no_builds_)?[abc]/.test(
-		param
-	);
+	return DUOSMIUM_ID_REGEX.test(param);
 }) satisfies ParamMatcher;

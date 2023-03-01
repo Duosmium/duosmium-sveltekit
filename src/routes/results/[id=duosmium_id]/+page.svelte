@@ -29,7 +29,7 @@
 		<meta name="pinterest" content="nopin" />
 		<meta name="format-detection" content="telephone=no" />
 		<meta name="skype_toolbar" content="skype_toolbar_parser_compatible" />
-		<link href='/favicon.png' rel="icon" type="image/png" />
+		<link href="/favicon.png" rel="icon" type="image/png" />
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 		<link

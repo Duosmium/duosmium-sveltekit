@@ -1,24 +1,25 @@
 import type { PageServerLoad } from './$types';
-import { db } from '$lib/database';
-import { getInterpreter } from '../../../lib/interpreter';
-import { dateString, objectToYAML, tournamentTitle } from '../../../lib/helpers';
+import { getInterpreter } from '$lib/interpreter';
+import { dateString, objectToYAML, tournamentTitle } from '$lib/helpers';
+import { getAllResults } from '$lib/async';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import type Interpreter from 'sciolyff/interpreter';
-import strftime from 'strftime';
-
-async function getAllResults() {
-	const basic = await db.collection('results').find().toArray();
-	basic.sort((a, b) => (a['duosmium_id'] > b['duosmium_id'] ? -1 : 1));
-	return basic;
-}
 
 export const load = (async () => {
 	const results = await getAllResults();
-	const interpreters: Interpreter[] = results.map((r) => getInterpreter(objectToYAML(r['result'])));
-	const ids = results.map((r) => r['duosmium_id']);
+	const interpreters: Interpreter[] = [];
+	for (const duosmiumID in results) {
+		console.log(duosmiumID);
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
+		const result = results[duosmiumID];
+		console.log(result);
+		interpreters.push(getInterpreter(objectToYAML(result)));
+	}
+	const ids = Object.keys(results);
 	const names = interpreters.map(
-		(i) => i.tournament.year + ' ' + tournamentTitle(i.tournament) + ' (' + dateString(i) + ')'
+		(i) => i.tournament.year + ' ' + tournamentTitle(i.tournament) + ' (Div. ' + i.tournament.division.toUpperCase() + ') — ' + dateString(i) + ' @ ' + i.tournament.location
 	);
 	return {
 		ids: ids,

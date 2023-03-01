@@ -1,18 +1,23 @@
 // noinspection JSUnusedGlobalSymbols
 
 import type { RequestHandler } from './$types';
-import { getAllResults } from '$lib/async';
-import { JSON_OPTIONS, objectToJSON, YAML_OPTIONS, objectToYAML } from '$lib/helpers';
+import { getAllResults, handleUploadedYAML, handlePOSTedJSON } from '$lib/async';
+import { exportYAMLOrJSON } from '$lib/helpers';
 
 export const GET = (async ({ url }) => {
 	const allResults = await getAllResults();
-	if (url.searchParams.get("format") === 'yaml') {
-		const myYAMLOptions = YAML_OPTIONS;
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
-		myYAMLOptions["headers"]["content-disposition"] = "attachment; filename=results.yaml";
-		return new Response(objectToYAML(allResults), myYAMLOptions);
-	} else {
-		return new Response(objectToJSON(allResults), JSON_OPTIONS);
+	return exportYAMLOrJSON(url, allResults, 'results');
+}) satisfies RequestHandler;
+
+export const POST = (async ({ request }) => {
+	const data = await request.formData();
+	const yaml = data.get('yaml');
+	const json = data.get('result');
+	let fileName;
+	if (yaml instanceof File) {
+		fileName = await handleUploadedYAML(yaml);
+	} else if (json !== null && typeof json === 'object') {
+		fileName = await handlePOSTedJSON(json);
 	}
+	return new Response(`Result ${fileName} created`, {status: 201});
 }) satisfies RequestHandler;

@@ -2,6 +2,9 @@ import { dump } from 'js-yaml';
 import type { Team, Tournament, Interpreter } from 'sciolyff/dist/src/interpreter/types';
 import strftime from 'strftime';
 
+export const DUOSMIUM_ID_REGEX =
+	/(19|20)\d{2}-[01]\d-[0-3]\d_([\w]+_invitational|([ns]?[A-Z]{2})_[\w]+_regional|([ns]?[A-Z]{2})_states|nationals)_(no_builds_)?[abc]/;
+
 export function objectToYAML(obj: object) {
 	return dump(obj).replaceAll('T00:00:00.000Z', '');
 }
@@ -10,8 +13,25 @@ export function objectToJSON(obj: object) {
 	return JSON.stringify(obj).replaceAll('T00:00:00.000Z', '');
 }
 
-export const JSON_OPTIONS: object = {headers: {'content-type':'application/json'}}
-export const YAML_OPTIONS: object = {headers: {'content-type':'text/yaml', 'content-disposition': 'attachment; filename=placeholder.yaml'}}
+export const JSON_OPTIONS: object = { headers: { 'content-type': 'application/json' } };
+export const YAML_OPTIONS: object = {
+	headers: {
+		'content-type': 'text/yaml',
+		'content-disposition': 'attachment; filename=placeholder.yaml'
+	}
+};
+
+export function exportYAMLOrJSON(url: URL, obj: object, yamlName: string) {
+	if (url.searchParams.get('format') === 'yaml') {
+		const myYAMLOptions = YAML_OPTIONS;
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
+		myYAMLOptions['headers']['content-disposition'] = `attachment; filename=${yamlName}.yaml`;
+		return new Response(objectToYAML(obj), myYAMLOptions);
+	} else {
+		return new Response(objectToJSON(obj), JSON_OPTIONS);
+	}
+}
 
 const STATES_BY_POSTAL_CODE: object = {
 	AL: 'Alabama',
@@ -82,7 +102,6 @@ export function generateFilename(interpreter: Interpreter) {
 	if (interpreter.tournament.startDate === undefined) {
 		throw new Error('Tournament has no start date!');
 	}
-	const relevantString = getRelevantString(interpreter);
 	let output = '';
 	output += interpreter.tournament.startDate.getFullYear();
 	output += '-' + (interpreter.tournament.startDate.getUTCMonth() + 1).toString().padStart(2, '0');
@@ -95,18 +114,18 @@ export function generateFilename(interpreter: Interpreter) {
 			output += `_${interpreter.tournament.state}_states`;
 			break;
 		case 'Regionals':
-			output += `_${interpreter.tournament.state}_${relevantString
+			output += `_${interpreter.tournament.state}_${getRelevantString(interpreter)
 				.toLowerCase()
 				.split('regional')[0]
 				.replace(/\./g, '')
-				.replace(/[^A-Za-z0-9-]/g, '_')}regional`;
+				.replace(/[^A-Za-z0-9]/g, '_')}regional`;
 			break;
 		default:
-			output += `_${relevantString
+			output += `_${getRelevantString(interpreter)
 				.toLowerCase()
 				.split('invitational')[0]
 				.replace(/\./g, '')
-				.replace(/[^A-Za-z0-9-]/g, '_')}invitational`;
+				.replace(/[^A-Za-z0-9]/g, '_')}invitational`;
 			break;
 	}
 	output += '_' + interpreter.tournament.division.toLowerCase();
@@ -155,17 +174,19 @@ export function formatSchool(team: Team) {
 }
 
 function abbrSchool(school: string) {
-	return school
-		// .replace('Elementary School', 'Elementary')
-		.replace('Elementary School', 'E.S.')
-		.replace('Elementary/Middle School', 'E.M.S.')
-		.replace('Middle School', 'M.S.')
-		.replace('Junior High School', 'J.H.S.')
-		.replace(/Middle[ /-]High School/, 'M.H.S')
-		.replace('Junior/Senior High School', 'Jr./Sr. H.S.')
-		.replace('High School', 'H.S.')
-		// .replace('Secondary School', 'Secondary');
-		.replace('Secondary School', 'S.S.');
+	return (
+		school
+			// .replace('Elementary School', 'Elementary')
+			.replace('Elementary School', 'E.S.')
+			.replace('Elementary/Middle School', 'E.M.S.')
+			.replace('Middle School', 'M.S.')
+			.replace('Junior High School', 'J.H.S.')
+			.replace(/Middle[ /-]High School/, 'M.H.S')
+			.replace('Junior/Senior High School', 'Jr./Sr. H.S.')
+			.replace('High School', 'H.S.')
+			// .replace('Secondary School', 'Secondary');
+			.replace('Secondary School', 'S.S.')
+	);
 }
 
 function fullSchoolName(team: Team) {
