@@ -3,8 +3,10 @@ import type { Team, Tournament, Interpreter } from 'sciolyff/dist/src/interprete
 import strftime from 'strftime';
 
 export function objectToYAML(obj: object) {
-	return dump(obj).replace('T00:00:00.000Z', '');
+	return dump(obj).replaceAll('T00:00:00.000Z', '');
 }
+
+export const JSON_OPTIONS: object = {headers: {'content-type':'application/json'}}
 
 const STATES_BY_POSTAL_CODE: object = {
 	AL: 'Alabama',
