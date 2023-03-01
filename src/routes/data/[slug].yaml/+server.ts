@@ -1,5 +1,6 @@
-import { getResult, objectToYAML } from '$lib/helpers';
+import { objectToYAML } from '$lib/helpers';
 import type { RequestHandler } from './$types';
+import { getResult } from '$lib/async';
 
 export const GET = (async ({ params }) => {
 	const yaml = await getResult(params.slug).then(objectToYAML);

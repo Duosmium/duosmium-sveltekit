@@ -2,7 +2,6 @@
 	import type { PageServerData } from './$types';
 	import { getInterpreter } from '$lib/interpreter';
 	import { dateString, formatSchool, tournamentTitle, tournamentTitleShort } from '$lib/helpers';
-
 	export let data: PageServerData;
 	export const interpreter = getInterpreter(data.yaml);
 </script>

@@ -1,4 +1,4 @@
-import { getResult } from '$lib/helpers';
+import { getResult } from '$lib/async';
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore

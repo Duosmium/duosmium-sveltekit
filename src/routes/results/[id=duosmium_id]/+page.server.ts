@@ -1,5 +1,6 @@
 import type { PageServerLoad } from './$types';
-import { getResult, objectToYAML } from '$lib/helpers';
+import { objectToYAML } from '$lib/helpers';
+import { getResult } from '$lib/async';
 
 export const load = (async ({ params }) => {
 	const yaml = getResult(params.id).then(objectToYAML);
