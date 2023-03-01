@@ -1,8 +1,8 @@
 // noinspection JSUnusedGlobalSymbols
 
 import type { RequestHandler } from './$types';
-import { getAllResults, handleUploadedYAML, handlePOSTedJSON } from '$lib/async';
-import { exportYAMLOrJSON } from '$lib/helpers';
+import { getAllResults, handleUploadedYAML, handlePOSTedJSON } from '$lib/results/async';
+import { exportYAMLOrJSON } from '$lib/results/helpers';
 
 export const GET = (async ({ url }) => {
 	const allResults = await getAllResults();
@@ -19,5 +19,5 @@ export const POST = (async ({ request }) => {
 	} else if (json !== null && typeof json === 'object') {
 		fileName = await handlePOSTedJSON(json);
 	}
-	return new Response(`Result ${fileName} created`, {status: 201});
+	return new Response(`Result ${fileName} created`, { status: 201 });
 }) satisfies RequestHandler;

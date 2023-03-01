@@ -1,5 +1,5 @@
 import type { Actions } from './$types';
-import { handleUploadedYAML } from '$lib/async';
+import { handleUploadedYAML } from '$lib/results/async';
 
 export const actions = {
 	default: async ({ request }) => {

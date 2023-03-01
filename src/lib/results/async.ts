@@ -1,22 +1,37 @@
-import { db } from './database';
+import { db } from '$lib/database';
 import { dump, load } from 'js-yaml';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import Interpreter from 'sciolyff/interpreter';
 import { error } from '@sveltejs/kit';
 import { generateFilename } from './helpers';
+import { addSchoolsFromInterpreter } from '../schools/async';
+import type { ObjectId } from 'mongodb';
 
-export async function getResult(duosmiumID: string): Promise<object> {
-	const matches = await db.collection('results').find({ duosmium_id: duosmiumID });
-	if (!(await resultExists(duosmiumID))) {
-		throw new Error('No result found!');
+export async function getResultByDuosmiumID(duosmiumID: string): Promise<object> {
+	if (!(await resultExistsByDuosmiumID(duosmiumID))) {
+		throw error(404, 'No result found!');
 	}
+	const matches = await db.collection('results').find({ duosmium_id: duosmiumID });
 	const arr = await matches.toArray();
 	return arr[0]['result'];
 }
 
-export async function resultExists(duosmiumID: string): Promise<boolean> {
+export async function resultExistsByDuosmiumID(duosmiumID: string): Promise<boolean> {
 	return (await db.collection('results').countDocuments({ duosmium_id: duosmiumID })) > 0;
+}
+
+export async function getResultByMongoID(mongoID: ObjectId): Promise<object> {
+	if (!(await resultExistsByMongoID(mongoID))) {
+		throw error(404, 'No result found!');
+	}
+	const matches = await db.collection('results').find({ _id: mongoID });
+	const arr = await matches.toArray();
+	return arr[0]['result'];
+}
+
+export async function resultExistsByMongoID(mongoID: ObjectId): Promise<boolean> {
+	return (await db.collection('results').countDocuments({ _id: mongoID })) > 0;
 }
 
 export async function getAllResults(): Promise<object> {
@@ -52,7 +67,7 @@ async function addOrReplaceResult(yaml: string, obj: object | unknown) {
 	}
 	const fileName = generateFilename(interpreter);
 	const collection = db.collection('results');
-	if (await resultExists(fileName)) {
+	if (await resultExistsByDuosmiumID(fileName)) {
 		await collection.updateOne(
 			{
 				duosmium_id: fileName
@@ -69,5 +84,6 @@ async function addOrReplaceResult(yaml: string, obj: object | unknown) {
 			result: obj
 		});
 	}
+	await addSchoolsFromInterpreter(interpreter);
 	return fileName;
 }

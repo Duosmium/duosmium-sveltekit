@@ -1,7 +1,7 @@
 import type { PageServerLoad } from './$types';
-import { getInterpreter } from '$lib/interpreter';
-import { dateString, objectToYAML, tournamentTitle } from '$lib/helpers';
-import { getAllResults } from '$lib/async';
+import { getInterpreter } from '$lib/results/interpreter';
+import { dateString, objectToYAML, tournamentTitle } from '$lib/results/helpers';
+import { getAllResults } from '$lib/results/async';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import type Interpreter from 'sciolyff/interpreter';
@@ -19,7 +19,16 @@ export const load = (async () => {
 	}
 	const ids = Object.keys(results);
 	const names = interpreters.map(
-		(i) => i.tournament.year + ' ' + tournamentTitle(i.tournament) + ' (Div. ' + i.tournament.division.toUpperCase() + ') — ' + dateString(i) + ' @ ' + i.tournament.location
+		(i) =>
+			i.tournament.year +
+			' ' +
+			tournamentTitle(i.tournament) +
+			' (Div. ' +
+			i.tournament.division.toUpperCase() +
+			') — ' +
+			dateString(i) +
+			' @ ' +
+			i.tournament.location
 	);
 	return {
 		ids: ids,

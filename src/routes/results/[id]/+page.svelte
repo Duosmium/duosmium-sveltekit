@@ -1,8 +1,13 @@
 <!--suppress JSUnusedAssignment -->
 <script lang="ts">
 	import type { PageServerData } from './$types';
-	import { getInterpreter } from '$lib/interpreter';
-	import { dateString, formatSchool, tournamentTitle, tournamentTitleShort } from '$lib/helpers';
+	import { getInterpreter } from '$lib/results/interpreter';
+	import {
+		dateString,
+		formatSchool,
+		tournamentTitle,
+		tournamentTitleShort
+	} from '$lib/results/helpers';
 	export let data: PageServerData;
 	// noinspection TypeScriptUnresolvedVariable
 	export const interpreter = getInterpreter(data.yaml);

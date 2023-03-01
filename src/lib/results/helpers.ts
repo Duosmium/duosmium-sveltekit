@@ -3,7 +3,9 @@ import type { Team, Tournament, Interpreter } from 'sciolyff/dist/src/interprete
 import strftime from 'strftime';
 
 export const DUOSMIUM_ID_REGEX =
-	/(19|20)\d{2}-[01]\d-[0-3]\d_([\w]+_invitational|([ns]?[A-Z]{2})_[\w]+_regional|([ns]?[A-Z]{2})_states|nationals)_(no_builds_)?[abc]/;
+	/^(19|20)\d{2}-[01]\d-[0-3]\d_([\w]+_invitational|([ns]?[A-Z]{2})_[\w]+_regional|([ns]?[A-Z]{2})_states|nationals)_(no_builds_)?[abc]$/;
+
+export const MONGO_ID_REGEX = /^[0-9a-f]{24}$/;
 
 export function objectToYAML(obj: object) {
 	return dump(obj).replaceAll('T00:00:00.000Z', '');
