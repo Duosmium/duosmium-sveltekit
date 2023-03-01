@@ -6,7 +6,12 @@ export function objectToYAML(obj: object) {
 	return dump(obj).replaceAll('T00:00:00.000Z', '');
 }
 
+export function objectToJSON(obj: object) {
+	return JSON.stringify(obj).replaceAll('T00:00:00.000Z', '');
+}
+
 export const JSON_OPTIONS: object = {headers: {'content-type':'application/json'}}
+export const YAML_OPTIONS: object = {headers: {'content-type':'text/yaml', 'content-disposition': 'attachment; filename=placeholder.yaml'}}
 
 const STATES_BY_POSTAL_CODE: object = {
 	AL: 'Alabama',

@@ -25,7 +25,6 @@ export async function getAllResults(): Promise<object> {
 		}
 		return 0;
 	});
-	console.log(arr[0]["duosmium_id"])
 	for (const arrElement of arr) {
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore
