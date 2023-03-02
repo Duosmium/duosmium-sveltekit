@@ -9,11 +9,11 @@ import { addSchoolsFromInterpreter } from '$lib/schools/async';
 import type { ObjectId } from 'mongodb';
 
 export async function getResultByDuosmiumID(duosmiumID: string): Promise<object> {
-	if (!(await resultExistsByDuosmiumID(duosmiumID))) {
-		throw error(404, 'No result found!');
-	}
 	const matches = await db.collection('results').find({ duosmium_id: duosmiumID });
 	const arr = await matches.toArray();
+	if (arr.length < 1) {
+		throw error(404, 'No result found!');
+	}
 	return arr[0]['result'];
 }
 
@@ -22,11 +22,11 @@ export async function resultExistsByDuosmiumID(duosmiumID: string): Promise<bool
 }
 
 export async function getResultByMongoID(mongoID: ObjectId): Promise<object> {
-	if (!(await resultExistsByMongoID(mongoID))) {
-		throw error(404, 'No result found!');
-	}
 	const matches = await db.collection('results').find({ _id: mongoID });
 	const arr = await matches.toArray();
+	if (arr.length < 1) {
+		throw error(404, 'No result found!');
+	}
 	return arr[0]['result'];
 }
 
@@ -38,7 +38,7 @@ export async function getAllResults(): Promise<object> {
 	const matches = await db.collection('results').find();
 	const matchObject: object = {};
 	let arr = await matches.toArray();
-	arr = arr.sort((a, b) => (a['duosmium_id'] > b['duosmium_id'] ? -1 : 1));
+	arr = arr.sort((a, b) => (a['duosmium_id'] > b['duosmium_id'] ? 1 : -1));
 	for (const arrElement of arr) {
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore
@@ -67,7 +67,7 @@ async function addResult(yaml: string, obj: object | unknown) {
 	}
 	const fileName = generateFilename(interpreter);
 	const collection = db.collection('results');
-	collection.createIndex({ duosmium_id: 1 }, { unique: true });
+	await collection.createIndex({ duosmium_id: 1 }, { unique: true });
 	if (await resultExistsByDuosmiumID(fileName)) {
 		// throw error(400, 'This result already exists!');
 		await collection.updateOne(
@@ -88,4 +88,8 @@ async function addResult(yaml: string, obj: object | unknown) {
 	}
 	await addSchoolsFromInterpreter(interpreter);
 	return fileName;
+}
+
+export async function deleteAllResults() {
+	await db.collection('results').drop();
 }

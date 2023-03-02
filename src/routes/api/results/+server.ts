@@ -1,7 +1,12 @@
 // noinspection JSUnusedGlobalSymbols
 
 import type { RequestHandler } from './$types';
-import { getAllResults, handleUploadedYAML, handlePOSTedJSON } from '$lib/results/async';
+import {
+	getAllResults,
+	handleUploadedYAML,
+	handlePOSTedJSON,
+	deleteAllResults
+} from '$lib/results/async';
 import { exportYAMLOrJSON } from '$lib/results/helpers';
 
 export const GET = (async ({ url }) => {
@@ -20,4 +25,9 @@ export const POST = (async ({ request }) => {
 		fileName = await handlePOSTedJSON(json);
 	}
 	return new Response(`Result ${fileName} created`, { status: 201 });
+}) satisfies RequestHandler;
+
+export const DELETE = (async () => {
+	await deleteAllResults();
+	return new Response(null, { status: 204 });
 }) satisfies RequestHandler;

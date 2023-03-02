@@ -10,11 +10,9 @@ export const load = (async () => {
 	const results = await getAllResults();
 	const interpreters: Interpreter[] = [];
 	for (const duosmiumID in results) {
-		console.log(duosmiumID);
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore
 		const result = results[duosmiumID];
-		console.log(result);
 		interpreters.push(getInterpreter(objectToYAML(result)));
 	}
 	const ids = Object.keys(results);
