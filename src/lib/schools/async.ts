@@ -43,6 +43,10 @@ export async function schoolExistsByFullName(fullName: string): Promise<boolean>
 	return (await db.collection('schools').countDocuments({ full_name: fullName })) > 0;
 }
 
+export async function deleteSchoolByFullName(fullName: string) {
+	await db.collection('schools').deleteOne({ full_name: fullName });
+}
+
 export async function getSchoolByMongoID(mongoID: ObjectId): Promise<object> {
 	const matches = await db.collection('schools').find({ _id: mongoID });
 	const arr = await matches.toArray();
@@ -54,6 +58,10 @@ export async function getSchoolByMongoID(mongoID: ObjectId): Promise<object> {
 
 export async function schoolExistsByMongoID(mongoID: ObjectId): Promise<boolean> {
 	return (await db.collection('schools').countDocuments({ _id: mongoID })) > 0;
+}
+
+export async function deleteSchoolByMongoID(mongoID: ObjectId) {
+	await db.collection('schools').deleteOne({ _id: mongoID });
 }
 
 export async function getAllSchools(): Promise<object> {
@@ -144,5 +152,5 @@ async function addTournamentToSchool(school: string, duosmiumID: string) {
 }
 
 export async function deleteAllSchools() {
-	db.collection('schools').drop();
+	await db.collection('schools').drop();
 }

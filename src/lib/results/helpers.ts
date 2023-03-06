@@ -116,22 +116,37 @@ export function generateFilename(interpreter: Interpreter) {
 			output += `_${interpreter.tournament.state}_states`;
 			break;
 		case 'Regionals':
-			output += `_${interpreter.tournament.state}_${getRelevantString(interpreter)
-				.toLowerCase()
-				.split('regional')[0]
-				.replace(/\./g, '')
-				.replace(/[^A-Za-z0-9]/g, '_')}regional`;
+			output += `_${interpreter.tournament.state}_${cleanString(
+				getRelevantString(interpreter).toLowerCase().split('regional')[0]
+			)}regional`;
 			break;
 		default:
-			output += `_${getRelevantString(interpreter)
-				.toLowerCase()
-				.split('invitational')[0]
-				.replace(/\./g, '')
-				.replace(/[^A-Za-z0-9]/g, '_')}invitational`;
+			output += `_${cleanString(
+				getRelevantString(interpreter).toLowerCase().split('invitational')[0]
+			)}invitational`;
 			break;
 	}
+	if (
+		interpreter.tournament.level === 'Regionals' ||
+		interpreter.tournament.level === 'Invitational'
+	) {
+		const nameParts = getRelevantString(interpreter)
+			.toLowerCase()
+			.split(interpreter.tournament.level === 'Regionals' ? 'regional' : 'invitational');
+		if (nameParts.length > 1) {
+			for (let i = 1; i < nameParts.length; i++) {
+				output += '_' + cleanString(nameParts[i].trim());
+			}
+			output = output.substring(0, output.length - 1);
+		}
+	}
 	output += '_' + interpreter.tournament.division.toLowerCase();
+	output = output.replace(/_+/g, '_');
 	return output;
+}
+
+function cleanString(s: string) {
+	return s.replace(/\./g, '').replace(/[^A-Za-z0-9]/g, '_');
 }
 
 export function tournamentTitle(tInfo: Tournament) {

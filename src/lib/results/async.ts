@@ -21,6 +21,10 @@ export async function resultExistsByDuosmiumID(duosmiumID: string): Promise<bool
 	return (await db.collection('results').countDocuments({ duosmium_id: duosmiumID })) > 0;
 }
 
+export async function deleteResultByDuosmiumID(duosmiumID: string) {
+	await db.collection('results').deleteOne({ duosmium_id: duosmiumID });
+}
+
 export async function getResultByMongoID(mongoID: ObjectId): Promise<object> {
 	const matches = await db.collection('results').find({ _id: mongoID });
 	const arr = await matches.toArray();
@@ -32,6 +36,10 @@ export async function getResultByMongoID(mongoID: ObjectId): Promise<object> {
 
 export async function resultExistsByMongoID(mongoID: ObjectId): Promise<boolean> {
 	return (await db.collection('results').countDocuments({ _id: mongoID })) > 0;
+}
+
+export async function deleteResultByMongoID(mongoID: ObjectId) {
+	await db.collection('results').deleteOne({ _id: mongoID });
 }
 
 export async function getAllResults(): Promise<object> {

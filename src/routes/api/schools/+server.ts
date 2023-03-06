@@ -3,6 +3,7 @@
 import type { RequestHandler } from './$types';
 import { getAllSchools, handlePOSTedJSON, deleteAllSchools } from '$lib/schools/async';
 import { exportYAMLOrJSON } from '$lib/results/helpers';
+import { error } from '@sveltejs/kit';
 
 export const GET = (async ({ url }) => {
 	const allSchools = await getAllSchools();
@@ -17,6 +18,14 @@ export const POST = (async ({ request }) => {
 		schoolName = await handlePOSTedJSON(json);
 	}
 	return new Response(`School ${schoolName} created`, { status: 201 });
+}) satisfies RequestHandler;
+
+export const PUT = (async () => {
+	throw error(501);
+}) satisfies RequestHandler;
+
+export const PATCH = (async () => {
+	throw error(501);
 }) satisfies RequestHandler;
 
 export const DELETE = (async () => {
