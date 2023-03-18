@@ -5,7 +5,17 @@ import { generateFilename, MONGO_ID_REGEX } from './helpers';
 import { addSchoolsFromInterpreter } from '$lib/schools/async';
 import { ObjectId } from 'mongodb';
 import { db } from '$lib/database';
-import { dump, load } from 'js-yaml';
+import { load } from 'js-yaml';
+import { addEventsFromInterpreter } from '$lib/events/async';
+import {
+	deleteAllValues,
+	deleteValueByQuery,
+	getAllValues,
+	getValueByQuery,
+	valueExistsByQuery
+} from '$lib/global/async';
+
+const collection = db.collection('results');
 
 export async function getResult(id: string): Promise<object> {
 	if (MONGO_ID_REGEX.test(id)) {
@@ -32,72 +42,55 @@ export async function deleteResult(id: string) {
 }
 
 async function getResultByDuosmiumID(duosmiumID: string): Promise<object> {
-	const matches = await db.collection('results').find({ duosmium_id: duosmiumID });
-	const arr = await matches.toArray();
-	if (arr.length < 1) {
-		throw new Error('No result found!');
-	}
-	return arr[0]['result'];
+	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+	// @ts-ignore
+	return (await getValueByQuery(collection, { duosmium_id: duosmiumID }, 'result'))['result'];
 }
 
 async function resultExistsByDuosmiumID(duosmiumID: string): Promise<boolean> {
-	return (await db.collection('results').countDocuments({ duosmium_id: duosmiumID })) > 0;
+	return await valueExistsByQuery(collection, { duoamium_id: duosmiumID });
 }
 
 async function deleteResultByDuosmiumID(duosmiumID: string) {
-	await db.collection('results').deleteOne({ duosmium_id: duosmiumID });
+	return await deleteValueByQuery(collection, { duosmium_id: duosmiumID });
 }
 
 async function getResultByMongoID(mongoID: ObjectId): Promise<object> {
-	const matches = await db.collection('results').find({ _id: mongoID });
-	const arr = await matches.toArray();
-	if (arr.length < 1) {
-		throw new Error('No result found!');
-	}
-	return arr[0]['result'];
+	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+	// @ts-ignore
+	return (await getValueByQuery(collection, { _id: mongoID }, 'result'))['result'];
 }
 
 async function resultExistsByMongoID(mongoID: ObjectId): Promise<boolean> {
-	return (await db.collection('results').countDocuments({ _id: mongoID })) > 0;
+	return await valueExistsByQuery(collection, { _id: mongoID });
 }
 
 async function deleteResultByMongoID(mongoID: ObjectId) {
-	await db.collection('results').deleteOne({ _id: mongoID });
+	return await deleteValueByQuery(collection, { _id: mongoID });
 }
 
 export async function getAllResults(): Promise<object> {
-	const matches = await db.collection('results').find();
-	const matchObject: object = {};
-	let arr = await matches.toArray();
-	arr = arr.sort((a, b) => (a['duosmium_id'] > b['duosmium_id'] ? 1 : -1));
-	for (const arrElement of arr) {
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
-		matchObject[arrElement['duosmium_id']] = arrElement['result'];
-	}
-	return matchObject;
+	return await getAllValues(collection, ['duosmium_id'], 'duosmium_id');
+}
+
+export async function deleteAllResults() {
+	return deleteAllValues(collection);
 }
 
 export async function addResultFromYAMLFile(file: File) {
 	const yaml = await file.text();
 	const obj = load(yaml);
-	await addResult(yaml, obj);
+	await addResult(obj);
 }
 
-export async function addResultFromObject(obj: object) {
-	const yaml = dump(obj);
-	await addResult(yaml, obj);
-}
-
-async function addResult(yaml: string, obj: object | unknown) {
+export async function addResult(obj: object | unknown) {
 	let interpreter;
 	try {
-		interpreter = new Interpreter(yaml);
+		interpreter = new Interpreter(obj);
 	} catch (e) {
 		throw new Error('The uploaded data is not valid SciolyFF!');
 	}
 	const fileName = generateFilename(interpreter);
-	const collection = db.collection('results');
 	await collection.createIndex({ duosmium_id: 1 }, { unique: true });
 	if (await resultExistsByDuosmiumID(fileName)) {
 		await collection.updateOne(
@@ -117,9 +110,6 @@ async function addResult(yaml: string, obj: object | unknown) {
 		});
 	}
 	await addSchoolsFromInterpreter(interpreter);
+	await addEventsFromInterpreter(interpreter);
 	return fileName;
-}
-
-export async function deleteAllResults() {
-	await db.collection('results').drop();
 }
