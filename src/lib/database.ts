@@ -1,7 +1,4 @@
 import { MongoClient } from 'mongodb';
-import dotenv from 'dotenv';
-
-dotenv.config();
 
 let dbURI;
 if (process.env.DB_HOST === undefined) {
@@ -16,8 +13,7 @@ if (process.env.DB_HOST === undefined) {
 	dbURI = `mongodb://${dbUsername}:${dbPassword}@${dbHost}:${dbPort}/?retryWrites=true&w=majority`;
 }
 
-const client = new MongoClient(dbURI);
-await client.connect();
+const client = await new MongoClient(dbURI).connect();
 
 if (process.env.DB_DATABASE === undefined) {
 	throw new Error('Database not specified!');

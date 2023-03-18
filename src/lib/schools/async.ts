@@ -1,11 +1,10 @@
-import { db } from '$lib/database';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import Interpreter from 'sciolyff/interpreter';
-import { error } from '@sveltejs/kit';
 import { fullSchoolName } from './helpers';
 import type { ObjectId } from 'mongodb';
 import { generateFilename } from '$lib/results/helpers';
+import { db } from '$lib/database';
 
 export async function getSchoolByName(
 	name: string,
@@ -15,7 +14,7 @@ export async function getSchoolByName(
 	const matches = await db.collection('schools').find({ name: name, city: city, state: state });
 	const arr = await matches.toArray();
 	if (arr.length < 1) {
-		throw error(404, 'No school found!');
+		throw new Error('No school found!');
 	}
 	return arr[0];
 }
@@ -34,7 +33,7 @@ export async function getSchoolByFullName(fullName: string): Promise<object> {
 	const matches = await db.collection('schools').find({ full_name: fullName });
 	const arr = await matches.toArray();
 	if (arr.length < 1) {
-		throw error(404, 'No school found!');
+		throw new Error('No school found!');
 	}
 	return arr[0];
 }
@@ -51,7 +50,7 @@ export async function getSchoolByMongoID(mongoID: ObjectId): Promise<object> {
 	const matches = await db.collection('schools').find({ _id: mongoID });
 	const arr = await matches.toArray();
 	if (arr.length < 1) {
-		throw error(404, 'No school found!');
+		throw new Error('No school found!');
 	}
 	return arr[0];
 }
@@ -84,7 +83,7 @@ export async function addSchool(name: string, city: string | null, state: string
 	await collection.createIndex({ full_name: 1 }, { unique: true });
 	const schoolExists = await schoolExistsByName(name, city, state);
 	if (schoolExists) {
-		throw error(400, 'This school already exists!');
+		throw new Error('This school already exists!');
 	} else {
 		const fullName = fullSchoolName(name, city, state);
 		await collection.insertOne({
@@ -125,7 +124,7 @@ async function addTournamentToSchool(school: string, duosmiumID: string) {
 	const collection = db.collection('schools');
 	const schoolExists = await schoolExistsByFullName(school);
 	if (!schoolExists) {
-		throw error(400, 'This school does not already exist!');
+		throw new Error('This school does not already exist!');
 	} else {
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore

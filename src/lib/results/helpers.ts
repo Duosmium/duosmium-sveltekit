@@ -207,13 +207,15 @@ function abbrSchool(school: string) {
 }
 
 function fullSchoolName(team: Team) {
-	const location = team.city ? `(${team.city}, ${team.state})` : `(${team.state})`;
-	return `${team.school} ${location}`;
+	return `${team.school} (${teamLocation(team)})`;
 }
 
 function fullTeamName(team: Team) {
-	const location = team.city ? `(${team.city}, ${team.state})` : `(${team.state})`;
-	return `${team.school} ${team.suffix ? team.suffix + ' ' : ''}${location}`;
+	return `${team.school} ${team.suffix ? team.suffix + ' ' : ''}(${teamLocation(team)})`;
+}
+
+export function teamLocation(team: Team) {
+	return team.city ? `${team.city}, ${team.state}` : `${team.state}`;
 }
 
 // from https://stackoverflow.com/questions/13627308/
@@ -234,8 +236,8 @@ export const ordinalize = (i: number) => {
 
 export function dateString(i: Interpreter): string {
 	if (i.tournament.startDate && i.tournament.endDate) {
-		let s = strftime('%A, %B %d, %Y', i.tournament.startDate);
-		const e = strftime('%A, %B %d, %Y', i.tournament.endDate);
+		let s = strftime('%A, %B %-d, %Y', i.tournament.startDate);
+		const e = strftime('%A, %B %-d, %Y', i.tournament.endDate);
 		if (s != e) {
 			s += ' - ' + e;
 		}
@@ -253,4 +255,16 @@ function getRelevantString(i: Interpreter): string {
 		return i.tournament.shortName;
 	}
 	return '';
+}
+
+export function fullTournamentTitle(tournament: Tournament) {
+	return `${tournament.year} ${tournamentTitle(
+		tournament
+	)} (Div. ${tournament.division.toUpperCase()})`;
+}
+
+export function fullTournamentTitleShort(tournament: Tournament) {
+	return `${tournament.year} ${tournamentTitleShort(
+		tournament
+	)} (Div. ${tournament.division.toUpperCase()})`;
 }
