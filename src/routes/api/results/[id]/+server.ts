@@ -6,12 +6,12 @@ export async function DELETE(request: Request) {
 	const url = new URL(request.url);
 	const duosmiumID = url.pathname.split('/').pop();
 	if (duosmiumID === undefined) {
-		return new Response('No result specified!', { status: 400 });
+		throw error(400, 'No result specified!');
 	} else {
 		try {
 			await deleteResult(duosmiumID);
 		} catch (e) {
-			return new Response('Result ' + duosmiumID + ' does not exist!', { status: 404 });
+			throw error(404, 'Result ' + duosmiumID + ' does not exist!');
 		}
 	}
 	return new Response(null, { status: 204 });
@@ -33,13 +33,13 @@ export async function GET(request: Request) {
 }
 
 export async function PATCH() {
-	throw error(501);
+	throw error(405);
 }
 
 export async function POST() {
-	throw error(501);
+	throw error(405);
 }
 
 export async function PUT() {
-	throw error(501);
+	throw error(405);
 }

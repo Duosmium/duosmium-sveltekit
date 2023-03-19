@@ -22,3 +22,7 @@ if (process.env.DB_DATABASE === undefined) {
 	throw new Error('Database not specified!');
 }
 export const db = client.db(process.env.DB_DATABASE); // select database
+
+await db.collection('results').createIndex({ duosmium_id: 1 }, { unique: true });
+await db.collection('schools').createIndex({ full_name: 1 }, { unique: true });
+await db.collection('events').createIndex({ name: 1 }, { unique: true });

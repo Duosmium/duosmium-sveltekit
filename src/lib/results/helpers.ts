@@ -1,11 +1,7 @@
 import { dump } from 'js-yaml';
-import type { Team, Tournament, Interpreter } from 'sciolyff/dist/src/interpreter/types';
+import type { Interpreter, Team, Tournament } from 'sciolyff/dist/src/interpreter/types';
 import strftime from 'strftime';
-
-export const DUOSMIUM_ID_REGEX =
-	/^(19|20)\d{2}-[01]\d-[0-3]\d_([\w]+_invitational|([ns]?[A-Z]{2})_[\w]+_regional|([ns]?[A-Z]{2})_states|nationals)_(no_builds_)?[abc]$/;
-
-export const MONGO_ID_REGEX = /^[0-9a-f]{24}$/;
+import { JSON_OPTIONS, STATES_BY_POSTAL_CODE, YAML_OPTIONS } from '$lib/global/helpers';
 
 export function objectToYAML(obj: object) {
 	return dump(obj).replaceAll('T00:00:00.000Z', '');
@@ -14,14 +10,6 @@ export function objectToYAML(obj: object) {
 export function objectToJSON(obj: object) {
 	return JSON.stringify(obj).replaceAll('T00:00:00.000Z', '');
 }
-
-export const JSON_OPTIONS: object = { headers: { 'content-type': 'application/json' } };
-export const YAML_OPTIONS: object = {
-	headers: {
-		'content-type': 'text/yaml',
-		'content-disposition': 'attachment; filename=placeholder.yaml'
-	}
-};
 
 export function exportYAMLOrJSON(url: URL, obj: object, yamlName: string) {
 	if (url.searchParams.get('format') === 'yaml') {
@@ -34,62 +22,6 @@ export function exportYAMLOrJSON(url: URL, obj: object, yamlName: string) {
 		return new Response(objectToJSON(obj), JSON_OPTIONS);
 	}
 }
-
-const STATES_BY_POSTAL_CODE: object = {
-	AL: 'Alabama',
-	AK: 'Alaska',
-	AZ: 'Arizona',
-	AR: 'Arkansas',
-	CA: 'California',
-	nCA: 'Northern California',
-	sCA: 'Southern California',
-	CO: 'Colorado',
-	CT: 'Connecticut',
-	DE: 'Delaware',
-	DC: 'District of Columbia',
-	FL: 'Florida',
-	GA: 'Georgia',
-	HI: 'Hawaii',
-	ID: 'Idaho',
-	IL: 'Illinois',
-	IN: 'Indiana',
-	IA: 'Iowa',
-	KS: 'Kansas',
-	KY: 'Kentucky',
-	LA: 'Louisiana',
-	ME: 'Maine',
-	MD: 'Maryland',
-	MA: 'Massachusetts',
-	MI: 'Michigan',
-	MN: 'Minnesota',
-	MS: 'Mississippi',
-	MO: 'Missouri',
-	MT: 'Montana',
-	NE: 'Nebraska',
-	NV: 'Nevada',
-	NH: 'New Hampshire',
-	NJ: 'New Jersey',
-	NM: 'New Mexico',
-	NY: 'New York',
-	NC: 'North Carolina',
-	ND: 'North Dakota',
-	OH: 'Ohio',
-	OK: 'Oklahoma',
-	OR: 'Oregon',
-	PA: 'Pennsylvania',
-	RI: 'Rhode Island',
-	SC: 'South Carolina',
-	SD: 'South Dakota',
-	TN: 'Tennessee',
-	TX: 'Texas',
-	UT: 'Utah',
-	VT: 'Vermont',
-	VA: 'Virginia',
-	WA: 'Washington',
-	WV: 'West Virginia',
-	WI: 'Wisconsin',
-	WY: 'Wyoming'
-};
 
 function expandStateName(postalCode: string | undefined) {
 	if (postalCode === undefined) {

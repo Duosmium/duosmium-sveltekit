@@ -1,9 +1,11 @@
 import type { Collection } from 'mongodb';
+import type { ObjectId } from 'mongodb';
+import { db } from './database';
 
 export async function getValueByQuery(
 	collection: Collection,
 	query: object,
-	category: string
+	category = 'value'
 ): Promise<object> {
 	const matches = await collection.find(query);
 	const arr = await matches.toArray();
@@ -29,7 +31,7 @@ export async function getAllValues(
 	for (const arrElement of arr) {
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore
-		matchObject[arrElement[objKey]] = arrElement['result'];
+		matchObject[arrElement[objKey]] = arrElement;
 	}
 	return matchObject;
 }
@@ -49,16 +51,40 @@ function sortArrayByKeys(arr: any[], sortKeys: string[], reverse = false) {
 
 export async function deleteAllValues(collection: Collection, emptyFields: string[] = []) {
 	const query: object = {};
-	for (const field in emptyFields) {
+	for (let i = 0; i < emptyFields.length; i++) {
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore
-		query[field] = {
-			$in: [[]]
-		};
+		query[emptyFields[i]] = { $exists: true, $size: 0 };
 	}
 	return await collection.deleteMany(query);
 }
 
 export async function deleteValueByQuery(collection: Collection, query: object) {
 	return await collection.deleteOne(query);
+}
+
+export async function getFieldFromMongoID(
+	collection: Collection,
+	mongoID: ObjectId,
+	field: string
+) {
+	// Get a field from an object in a collection given a Mongo ID.
+	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+	// @ts-ignore
+	return (await getValueByQuery(collection, { _id: mongoID }))[field];
+}
+
+export async function deleteEntireDatabase() {
+	// Delete all data in the database. THIS IS A HIGHLY DESTRUCTIVE OPERATION!
+	return await db.dropDatabase();
+}
+
+export async function setValueToBlankArray(collection: Collection, field: string) {
+	const query = {
+		$set: {}
+	};
+	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+	// @ts-ignore
+	query['$set'][field] = [];
+	return await collection.updateMany({}, query);
 }

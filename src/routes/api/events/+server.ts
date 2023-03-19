@@ -13,13 +13,13 @@ export async function GET(request: Request) {
 }
 
 export async function PATCH() {
-	throw error(501);
+	throw error(405);
 }
 
 export async function POST() {
-	throw error(501);
+	throw error(405);
 }
 
 export async function PUT() {
-	throw error(501);
+	throw error(405);
 }

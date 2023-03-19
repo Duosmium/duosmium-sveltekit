@@ -1,19 +1,29 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import Interpreter from 'sciolyff/interpreter';
-import { generateFilename, MONGO_ID_REGEX } from './helpers';
-import { addSchoolsFromInterpreter } from '$lib/schools/async';
+import { generateFilename } from './helpers';
+import {
+	addSchoolsFromInterpreter,
+	deleteAllSchools,
+	removeTournamentFromAllSchools
+} from '$lib/schools/async';
 import { ObjectId } from 'mongodb';
-import { db } from '$lib/database';
+import { db } from '$lib/global/database';
 import { load } from 'js-yaml';
-import { addEventsFromInterpreter } from '$lib/events/async';
+import {
+	addEventsFromInterpreter,
+	deleteAllEvents,
+	removeTournamentFromAllEvents
+} from '$lib/events/async';
 import {
 	deleteAllValues,
 	deleteValueByQuery,
 	getAllValues,
+	getFieldFromMongoID,
 	getValueByQuery,
 	valueExistsByQuery
 } from '$lib/global/async';
+import { MONGO_ID_REGEX } from '$lib/global/helpers';
 
 const collection = db.collection('results');
 
@@ -35,10 +45,15 @@ export async function resultExists(id: string): Promise<boolean> {
 
 export async function deleteResult(id: string) {
 	if (MONGO_ID_REGEX.test(id)) {
-		return deleteResultByMongoID(new ObjectId(id));
-	} else {
-		return deleteResultByDuosmiumID(id);
+		id = await getDuosmiumIDFromMongoID(new ObjectId(id));
 	}
+	await removeTournamentFromAllSchools(id);
+	await removeTournamentFromAllEvents(id);
+	return await deleteResultByDuosmiumID(id);
+}
+
+async function getDuosmiumIDFromMongoID(mongoID: ObjectId) {
+	return await getFieldFromMongoID(collection, mongoID, 'duosmium_id');
 }
 
 async function getResultByDuosmiumID(duosmiumID: string): Promise<object> {
@@ -74,7 +89,10 @@ export async function getAllResults(): Promise<object> {
 }
 
 export async function deleteAllResults() {
-	return deleteAllValues(collection);
+	const output = await deleteAllValues(collection);
+	await deleteAllSchools();
+	await deleteAllEvents();
+	return output;
 }
 
 export async function addResultFromYAMLFile(file: File) {
@@ -91,24 +109,19 @@ export async function addResult(obj: object | unknown) {
 		throw new Error('The uploaded data is not valid SciolyFF!');
 	}
 	const fileName = generateFilename(interpreter);
-	await collection.createIndex({ duosmium_id: 1 }, { unique: true });
-	if (await resultExistsByDuosmiumID(fileName)) {
-		await collection.updateOne(
-			{
-				duosmium_id: fileName
-			},
-			{
-				$set: {
-					result: obj
-				}
+	await collection.updateOne(
+		{
+			duosmium_id: fileName
+		},
+		{
+			$set: {
+				result: obj
 			}
-		);
-	} else {
-		await collection.insertOne({
-			duosmium_id: fileName,
-			result: obj
-		});
-	}
+		},
+		{
+			upsert: true
+		}
+	);
 	await addSchoolsFromInterpreter(interpreter);
 	await addEventsFromInterpreter(interpreter);
 	return fileName;

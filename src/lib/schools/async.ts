@@ -2,18 +2,28 @@
 // @ts-ignore
 import Interpreter from 'sciolyff/interpreter';
 import { fullSchoolName } from './helpers';
-import type { ObjectId } from 'mongodb';
+import { ObjectId } from 'mongodb';
 import { generateFilename } from '$lib/results/helpers';
-import { db } from '$lib/database';
+import { db } from '$lib/global/database';
 import {
 	deleteAllValues,
 	deleteValueByQuery,
 	getAllValues,
 	getValueByQuery,
+	setValueToBlankArray,
 	valueExistsByQuery
 } from '$lib/global/async';
+import { MONGO_ID_REGEX } from '$lib/global/helpers';
 
 const collection = db.collection('schools');
+
+export async function getSchool(id: string): Promise<object> {
+	if (MONGO_ID_REGEX.test(id)) {
+		return getSchoolByMongoID(new ObjectId(id));
+	} else {
+		return getSchoolByFullName(id);
+	}
+}
 
 export async function getSchoolByName(
 	name: string,
@@ -59,26 +69,31 @@ export async function getAllSchools(): Promise<object> {
 	return await getAllValues(collection, ['full_name'], 'full_name');
 }
 
-export async function deleteAllSchools() {
+export async function deleteAllUnusedSchools() {
 	return await deleteAllValues(collection, ['tournaments']);
 }
 
 export async function addSchool(name: string, city: string | null, state: string) {
-	await collection.createIndex({ full_name: 1 }, { unique: true });
-	const schoolExists = await schoolExistsByName(name, city, state);
-	if (schoolExists) {
-		throw new Error('This school already exists!');
-	} else {
-		const fullName = fullSchoolName(name, city, state);
-		await collection.insertOne({
-			name: name,
-			city: city,
-			state: state,
-			full_name: fullName,
-			tournaments: []
-		});
-		return fullName;
-	}
+	const fullName = fullSchoolName(name, city, state);
+	return await collection.updateOne(
+		{
+			full_name: fullName
+		},
+		{
+			$set: {
+				name: name,
+				city: city,
+				state: state,
+				full_name: fullName
+			},
+			$setOnInsert: {
+				tournaments: []
+			}
+		},
+		{
+			upsert: true
+		}
+	);
 }
 
 export async function addSchoolsFromInterpreter(interpreter: Interpreter) {
@@ -87,42 +102,61 @@ export async function addSchoolsFromInterpreter(interpreter: Interpreter) {
 		const name = team.school;
 		const city = team.city;
 		const state = team.state;
-		let school;
-		try {
-			school = await addSchool(name, city, state);
-		} catch (e) {
-			// do nothing
-			school = fullSchoolName(name, city, state);
-		}
-		await addTournamentToSchool(school, duosmiumID);
+		await addSchool(name, city, state);
+		await addTournamentToSchool(name, city, state, duosmiumID);
 	}
 }
 
-async function addTournamentToSchool(school: string, duosmiumID: string) {
-	const schoolExists = await schoolExistsByFullName(school);
-	if (!schoolExists) {
-		throw new Error('This school does not already exist!');
-	} else {
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
-		const tournaments: string[] = (await getSchoolByFullName(school))['tournaments'];
-		if (!tournaments.includes(duosmiumID)) {
-			await collection.updateOne(
-				{
-					full_name: school
-				},
-				{
-					$push: {
-						tournaments: {
-							$each: [duosmiumID],
-							$sort: 1
-						}
-					}
+async function addTournamentToSchool(
+	name: string,
+	city: string,
+	state: string,
+	duosmiumID: string
+) {
+	return await collection.updateOne(
+		{
+			name: name,
+			city: city,
+			state: state,
+			full_name: fullSchoolName(name, city, state),
+			tournaments: {
+				$nin: [duosmiumID]
+			}
+		},
+		{
+			$push: {
+				tournaments: {
+					$each: [duosmiumID],
+					$sort: 1
 				}
-			);
-			return `Added ${duosmiumID} to ${school}`;
-		} else {
-			return `Did not add ${duosmiumID} to ${school} because it already exists`;
+			}
+		},
+		{
+			upsert: false
 		}
-	}
+	);
+}
+
+export async function removeTournamentFromAllSchools(duosmiumID: string) {
+	const output = await collection.updateMany(
+		{},
+		{
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
+			$pull: {
+				tournaments: duosmiumID
+			}
+		}
+	);
+	await deleteAllUnusedSchools();
+	return output;
+}
+
+export async function clearAllTournamentsFromSchools() {
+	return await setValueToBlankArray(collection, 'tournaments');
+}
+
+export async function deleteAllSchools() {
+	await clearAllTournamentsFromSchools();
+	return await deleteAllUnusedSchools();
 }
