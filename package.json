@@ -14,9 +14,13 @@
 		"format": "prettier --plugin-search-dir . --write ."
 	},
 	"dependencies": {
+		"@prisma/client": "^4.11.0",
+		"@supabase/auth-helpers-sveltekit": "^0.9.0",
+		"@supabase/supabase-js": "^2.11.0",
 		"dotenv": "^16.0.3",
 		"js-yaml": "^4.1.0",
 		"mongodb": "^5.0.1",
+		"prisma": "^4.11.0",
 		"sciolyff": "^0.11.0",
 		"strftime": "^0.10.1"
 	},
@@ -24,10 +28,10 @@
 		"@playwright/test": "^1.28.1",
 		"@sveltejs/adapter-auto": "^2.0.0",
 		"@sveltejs/kit": "^1.5.0",
-		"@typescript-eslint/eslint-plugin": "^5.45.0",
-		"@typescript-eslint/parser": "^5.45.0",
 		"@types/js-yaml": "^4.0.5",
 		"@types/strftime": "^0.9.4",
+		"@typescript-eslint/eslint-plugin": "^5.45.0",
+		"@typescript-eslint/parser": "^5.45.0",
 		"eslint": "^8.28.0",
 		"eslint-config-prettier": "^8.5.0",
 		"eslint-plugin-svelte3": "^4.0.0",
