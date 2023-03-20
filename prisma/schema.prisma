@@ -10,7 +10,8 @@ generator client {
 // SciolyFF
 
 model Result {
-  id         String      @id
+  id         Int         @id @default(autoincrement())
+  duosmiumId String      @unique
   tournament Tournament?
   logo       String?
   color      String?
@@ -23,8 +24,7 @@ model Tournament {
   tracks                        Track[]
   placings                      Placing[]
   penalties                     Penalty[]
-  raws                          Raw[]
-  histograms                    Histogram[]
+  histogram                     Histogram?
   location                      Location          @relation(fields: [locationId], references: [id], onDelete: Restrict)
   locationId                    Int
   level                         Level
@@ -55,25 +55,26 @@ model Tournament {
   // _topTeamsPerSchool can be calculated via database queries
   // _teamsEligibleForBids can be calculated via database queries
   result                        Result?           @relation(fields: [resultId], references: [id])
-  resultId                      String?           @unique
+  resultId                      Int?              @unique
+  histogramId                   Int?
 }
 
 model Team {
-  id                         Int         @id @default(autoincrement())
+  id                         Int        @id @default(autoincrement())
   number                     Int
-  school                     School      @relation(fields: [schoolId], references: [id], onDelete: Restrict)
-  tournament                 Tournament? @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
-  tournamentId               Int?
+  school                     School     @relation(fields: [schoolId], references: [id], onDelete: Restrict)
+  tournament                 Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  tournamentId               Int
   schoolId                   Int
   placings                   Placing[]
   penalties                  Penalty[]
-  track                      Track?      @relation(fields: [trackId], references: [id], onDelete: SetNull)
+  track                      Track?     @relation(fields: [trackId], references: [id], onDelete: SetNull)
   trackId                    Int?
   rank                       Int
   trackRank                  Int?
   points                     Int
   trackPoints                Int?
-  earnedBid                  Boolean     @default(false)
+  earnedBid                  Boolean    @default(false)
   // worstPlacingsToBeDropped can be calculated via queries
   trialEventPoints           Int
   trackTrialEventPoints      Int?
@@ -81,6 +82,7 @@ model Team {
   trialEventMedalCounts      Int[]
   trackMedalCounts           Int[]
   trackTrialEventMedalCounts Int[]
+  raws                       Raw[]
 
   @@unique([tournamentId, number])
 }
@@ -92,20 +94,22 @@ model Event {
 }
 
 model TournamentEvent {
-  id            Int         @id @default(autoincrement())
-  tournament    Tournament? @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
-  tournamentId  Int?
-  event         Event?      @relation(fields: [eventId], references: [id], onDelete: Restrict)
-  eventId       Int?
+  id            Int        @id @default(autoincrement())
+  tournament    Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  tournamentId  Int
+  event         Event      @relation(fields: [eventId], references: [id], onDelete: Restrict)
+  eventId       Int
   placings      Placing[]
   raws          Raw[]
-  trial         Boolean     @default(false)
-  trialed       Boolean     @default(false)
-  lowScoreWins  Boolean     @default(false)
-  highScoreWins Boolean     @default(true)
+  trial         Boolean    @default(false)
+  trialed       Boolean    @default(false)
+  lowScoreWins  Boolean    @default(false)
+  highScoreWins Boolean    @default(true)
   histoData     HistoData?
   medals        Int
   maximumPlace  Int
+
+  @@unique([tournamentId, eventId])
 }
 
 model Track {
@@ -124,70 +128,70 @@ model Track {
 }
 
 model Placing {
-  id                               Int              @id @default(autoincrement())
-  tournament                       Tournament?      @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
-  tournamentId                     Int?
-  event                            TournamentEvent? @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  eventId                          Int?
-  team                             Team?            @relation(fields: [teamId], references: [id], onDelete: Cascade)
-  teamId                           Int?
-  participated                     Boolean          @default(true)
-  disqualified                     Boolean          @default(false)
-  exempt                           Boolean          @default(false)
-  unknown                          Boolean          @default(false)
-  explicit                         Boolean          @default(false)
+  id                               Int             @id @default(autoincrement())
+  tournament                       Tournament      @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  tournamentId                     Int
+  event                            TournamentEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  eventId                          Int
+  team                             Team            @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  teamId                           Int
+  participated                     Boolean         @default(true)
+  disqualified                     Boolean         @default(false)
+  exempt                           Boolean         @default(false)
+  unknown                          Boolean         @default(false)
+  explicit                         Boolean         @default(false)
   trackPlace                       Int?
   raw                              Raw?
   rawId                            Int?
   // hasRaw can be calculated via database queries
   // didNotParticipate can be calculated via database queries
-  participationOnly                Boolean          @default(false)
-  droppedAsPartOfWorstPlacings     Boolean          @default(false)
-  tie                              Boolean          @default(false)
+  participationOnly                Boolean         @default(false)
+  droppedAsPartOfWorstPlacings     Boolean         @default(false)
+  tie                              Boolean         @default(false)
   place                            Int
-  initiallyConsideredForTeamPoints Boolean          @default(true)
-  consideredForTeamPoints          Boolean          @default(true)
+  initiallyConsideredForTeamPoints Boolean         @default(true)
+  consideredForTeamPoints          Boolean         @default(true)
   isolatedPoints                   Int
   isolatedTrackPoints              Int?
   points                           Int
   trackPoints                      Int?
-  pointsAffectedByExhibition       Boolean          @default(false)
-  pointsLimitedByMaximumPlace      Boolean          @default(false)
+  pointsAffectedByExhibition       Boolean         @default(false)
+  pointsLimitedByMaximumPlace      Boolean         @default(false)
   trackExhibitionPlacingsBehind    Int?
-  exhibitionPlacingsBehind         Int              @default(0)
-  track                            Track?           @relation(fields: [trackId], references: [id], onDelete: SetNull)
+  exhibitionPlacingsBehind         Int             @default(0)
+  track                            Track?          @relation(fields: [trackId], references: [id], onDelete: SetNull)
   trackId                          Int?
 
   @@unique([tournamentId, eventId, teamId])
 }
 
 model Penalty {
-  id           Int         @id @default(autoincrement())
-  tournament   Tournament? @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
-  tournamentId Int?
-  team         Team?       @relation(fields: [teamId], references: [id], onDelete: Cascade)
-  teamId       Int?
+  id           Int        @id @default(autoincrement())
+  tournament   Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  tournamentId Int
+  team         Team       @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  teamId       Int
   points       Int
-  track        Track?      @relation(fields: [trackId], references: [id], onDelete: SetNull)
+  track        Track?     @relation(fields: [trackId], references: [id], onDelete: SetNull)
   trackId      Int?
 
   @@unique([tournamentId, teamId])
 }
 
 model Raw {
-  id             Int              @id @default(autoincrement())
-  tournament     Tournament?      @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
-  tournamentId   Int?
-  event          TournamentEvent? @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  eventId        Int?
-  lowScoreWins   Boolean          @default(false)
+  id             Int             @id @default(autoincrement())
+  event          TournamentEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  eventId        Int
+  lowScoreWins   Boolean         @default(false)
   score          Float
-  tier           Int              @default(1)
-  tiered         Boolean          @default(false)
-  tiebreakerRank Int              @default(1)
-  lostTieBreaker Boolean          @default(false)
-  placing        Placing?         @relation(fields: [placingId], references: [id], onDelete: Cascade)
-  placingId      Int?             @unique
+  tier           Int             @default(1)
+  tiered         Boolean         @default(false)
+  tiebreakerRank Int             @default(1)
+  lostTieBreaker Boolean         @default(false)
+  placing        Placing         @relation(fields: [placingId], references: [id], onDelete: Cascade)
+  placingId      Int             @unique
+  team           Team            @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  teamId         Int
 }
 
 model School {
@@ -198,32 +202,30 @@ model School {
 }
 
 model HistoData {
-  id       Int              @id @default(autoincrement())
-  parent   Histogram        @relation(fields: [parentId], references: [id], onDelete: Cascade)
+  id       Int             @id @default(autoincrement())
+  parent   Histogram       @relation(fields: [parentId], references: [id], onDelete: Cascade)
   parentId Int
-  event    TournamentEvent? @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  eventId  Int?             @unique
+  event    TournamentEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  eventId  Int             @unique
   start    Float
   width    Float
   counts   Float[]
-  // TODO: how to model info?
-  // TODO: is this unique in any way?
+  info     Json?           @db.JsonB
 }
 
 model Histogram {
   id           Int         @id @default(autoincrement())
-  tournament   Tournament? @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  tournament   Tournament  @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
   type         String
   url          String?
   data         HistoData[]
-  tournamentId Int
-  // TODO: is this unique in any way?
+  tournamentId Int         @unique
 }
 
 model Location {
   id          Int          @id @default(autoincrement())
   name        String
-  city        String?
+  city        String
   state       String
   latitude    Float?
   longitude   Float?
