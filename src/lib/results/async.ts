@@ -33,7 +33,7 @@ export async function deleteResult(id: string) {
 }
 
 export async function deleteAllResults() {
-
+	supabase.from(table).drop();
 }
 
 export async function addResultFromYAMLFile(file: File) {

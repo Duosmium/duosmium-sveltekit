@@ -8,7 +8,6 @@ generator client {
 }
 
 // SciolyFF
-// TODO: make sure the right stuff is/isn't optional
 
 model Result {
   id         String      @id
@@ -43,9 +42,9 @@ model Tournament {
   maximumPlace                  Int
   perEventN                     String
   nOffset                       Int               @default(0)
-  startDate                     DateTime
-  endDate                       DateTime
-  awardsDate                    DateTime?
+  startDate                     DateTime          @db.Date
+  endDate                       DateTime          @db.Date
+  awardsDate                    DateTime?         @db.Date
   testRelease                   String?
   hasCustomMaximumPlace         Boolean
   hasTies                       Boolean
@@ -246,4 +245,21 @@ enum Division {
   A
   B
   C
+}
+
+// User policy, organizations, etc.
+
+model Organization {
+  id             Int          @id @default(autoincrement())
+  organizationId String       @unique
+  name           String?
+  policy         Json         @default("{}") @db.JsonB
+  userPolicies   UserPolicy[]
+}
+
+model UserPolicy {
+  id            Int            @id @default(autoincrement())
+  user_id       String         @unique @db.Uuid
+  organizations Organization[]
+  policy        Json           @default("{}") @db.JsonB
 }
