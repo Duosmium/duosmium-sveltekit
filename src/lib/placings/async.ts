@@ -81,9 +81,21 @@ function createDataInput(
 	trackID: number | null
 ) {
 	const output = {
-		tournamentId: tournamentID,
-		eventId: tournamentEventID,
-		teamId: teamID,
+		tournament: {
+			connect: {
+				id: tournamentID
+			}
+		},
+		event: {
+			connect: {
+				id: tournamentEventID
+			}
+		},
+		team: {
+			connect: {
+				id: teamID
+			}
+		},
 		participated: placing.participated,
 		disqualified: placing.disqualified,
 		exempt: placing.exempt,
@@ -98,12 +110,9 @@ function createDataInput(
 		initiallyConsideredForTeamPoints: placing.initiallyConsideredForTeamPoints,
 		consideredForTeamPoints: placing.consideredForTeamPoints,
 		isolatedPoints: placing.isolatedPoints,
-
 		points: placing.points,
-
 		pointsAffectedByExhibition: placing.pointsAffectedByExhibition,
 		pointsLimitedByMaximumPlace: placing.pointsLimitedByMaximumPlace,
-
 		exhibitionPlacingsBehind: placing._exhibitionPlacingsBehind
 	};
 	if (trackID !== null) {
@@ -116,7 +125,11 @@ function createDataInput(
 		// @ts-ignore
 		output['trackExhibitionPlacingsBehind'] = placing._trackExhibitonPlacingsBehind;
 		// @ts-ignore
-		output['trackId'] = trackID;
+		output['track'] = {
+			connect: {
+				id: trackID
+			}
+		};
 	}
 	return output;
 }

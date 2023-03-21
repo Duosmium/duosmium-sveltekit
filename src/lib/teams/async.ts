@@ -4,7 +4,6 @@
 // @ts-ignore
 import { Team } from 'sciolyff/interpreter';
 import { getTrack } from '../tracks/async';
-import { addSchool, getSchool } from '../schools/async';
 import { prisma } from '../global/prisma';
 import { addLocation, getLocation } from '../locations/async';
 
@@ -53,17 +52,11 @@ export async function addTeam(team: Team, tournamentID: number) {
 	} catch (e) {
 		locationID = (await addLocation(schoolData))['id'];
 	}
-	let schoolID;
-	try {
-		schoolID = (await getSchool(locationID))['id'];
-	} catch (e) {
-		schoolID = (await addSchool(schoolData))['id'];
-	}
 	let trackID = null;
 	if (team.track) {
 		trackID = (await getTrack(tournamentID, team.track.name))['id'];
 	}
-	const teamData = createDataInput(team, tournamentID, schoolID, trackID);
+	const teamData = createDataInput(team, tournamentID, locationID, trackID);
 	return await prisma.team.upsert({
 		where: {
 			tournamentId_number: {
@@ -80,13 +73,21 @@ export async function addTeam(team: Team, tournamentID: number) {
 function createDataInput(
 	team: Team,
 	tournamentID: number,
-	schoolID: number,
+	locationID: number,
 	trackID: number | null
 ) {
 	const output = {
-		tournamentId: tournamentID,
+		tournament: {
+			connect: {
+				id: tournamentID
+			}
+		},
 		number: team.number,
-		schoolId: schoolID,
+		location: {
+			connect: {
+				id: locationID
+			}
+		},
 		rank: team.rank,
 		trackRank: team.trackRank,
 		points: team.points,
@@ -103,7 +104,11 @@ function createDataInput(
 	if (trackID !== null) {
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore
-		output['trackId'] = trackID;
+		output['track'] = {
+			connect: {
+				id: trackID
+			}
+		};
 	}
 	return output;
 }

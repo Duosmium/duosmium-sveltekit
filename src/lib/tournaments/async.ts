@@ -89,7 +89,7 @@ export async function addTournament(tournament: Tournament, resultID: number) {
 
 function createDataInput(tournament: Tournament, resultID: number, locationID: number) {
 	return {
-		locationId: locationID,
+		// locationId: locationID,
 		level: <Level>tournament.level,
 		division: <Division>tournament.division,
 		year: tournament.year,
@@ -115,6 +115,16 @@ function createDataInput(tournament: Tournament, resultID: number, locationID: n
 		hasTracks: tournament.hasTracks,
 		largestPlace: tournament.largestPlace,
 		nonExhibitionTeamsCount: tournament.nonExhibitionTeamsCount,
-		resultId: resultID
+		// resultId: resultID
+		location: {
+			connect: {
+				id: locationID
+			}
+		},
+		result: {
+			connect: {
+				id: resultID
+			}
+		}
 	};
 }

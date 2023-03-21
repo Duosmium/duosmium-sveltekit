@@ -52,6 +52,7 @@ export async function addResultFromYAMLFile(file: File) {
 
 export async function addResult(interpreter: Interpreter) {
 	const duosmiumID = generateFilename(interpreter);
+	console.log(`Adding result ${duosmiumID} at ${new Date()}`);
 	// TODO: logo, color
 	const resultOutput = await prisma.result.upsert({
 		where: {
@@ -74,5 +75,6 @@ export async function addResult(interpreter: Interpreter) {
 			await addHistoData(event.histograms, tournamentEventID, histogramID);
 		}
 	}
+	console.log(`Added result ${duosmiumID} at ${new Date()}`);
 	return resultOutput;
 }

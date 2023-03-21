@@ -57,8 +57,16 @@ function createDataInput(
   parentID: number
 ) {
   return {
-    eventId: eventID,
-    parentId: parentID,
+    event: {
+      connect: {
+        id: eventID
+      }
+    },
+    parent: {
+      connect: {
+        id: parentID
+      }
+    },
     start: histoData.start,
     width: histoData.width,
     counts: histoData.counts,

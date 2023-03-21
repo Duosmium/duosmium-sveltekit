@@ -40,7 +40,7 @@ model Tournament {
   exemptPlacings                Int               @default(0)
   reverseScoring                Boolean           @default(false)
   maximumPlace                  Int
-  perEventN                     String
+  perEventN                     String?
   nOffset                       Int               @default(0)
   startDate                     DateTime          @db.Date
   endDate                       DateTime          @db.Date
@@ -50,11 +50,11 @@ model Tournament {
   hasTies                       Boolean
   hasTiesOutsideOfMaximumPlaces Boolean
   hasTracks                     Boolean
-  largestPlace                  Int
+  largestPlace                  Int?
   nonExhibitionTeamsCount       Int
   // _topTeamsPerSchool can be calculated via database queries
   // _teamsEligibleForBids can be calculated via database queries
-  result                        Result?           @relation(fields: [resultId], references: [id])
+  result                        Result?           @relation(fields: [resultId], references: [id], onDelete: Cascade)
   resultId                      Int?              @unique
   histogramId                   Int?
 }
@@ -62,10 +62,10 @@ model Tournament {
 model Team {
   id                         Int        @id @default(autoincrement())
   number                     Int
-  school                     School     @relation(fields: [schoolId], references: [id], onDelete: Restrict)
+  location                   Location   @relation(fields: [locationId], references: [id], onDelete: Restrict)
+  locationId                 Int
   tournament                 Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
   tournamentId               Int
-  schoolId                   Int
   placings                   Placing[]
   penalties                  Penalty[]
   track                      Track?     @relation(fields: [trackId], references: [id], onDelete: SetNull)
@@ -106,7 +106,7 @@ model TournamentEvent {
   lowScoreWins  Boolean    @default(false)
   highScoreWins Boolean    @default(true)
   histoData     HistoData?
-  medals        Int
+  medals        Int?
   maximumPlace  Int
 
   @@unique([tournamentId, eventId])
@@ -148,7 +148,7 @@ model Placing {
   participationOnly                Boolean         @default(false)
   droppedAsPartOfWorstPlacings     Boolean         @default(false)
   tie                              Boolean         @default(false)
-  place                            Int
+  place                            Int?
   initiallyConsideredForTeamPoints Boolean         @default(true)
   consideredForTeamPoints          Boolean         @default(true)
   isolatedPoints                   Int
@@ -194,13 +194,6 @@ model Raw {
   teamId         Int
 }
 
-model School {
-  id         Int      @id @default(autoincrement())
-  teams      Team[]
-  location   Location @relation(fields: [locationId], references: [id])
-  locationId Int      @unique
-}
-
 model HistoData {
   id       Int             @id @default(autoincrement())
   parent   Histogram       @relation(fields: [parentId], references: [id], onDelete: Cascade)
@@ -229,9 +222,8 @@ model Location {
   state       String
   latitude    Float?
   longitude   Float?
-  school      School?
-  schoolId    Int?
   tournaments Tournament[]
+  teams       Team[]
 
   @@unique([name, city, state])
 }

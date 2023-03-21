@@ -61,15 +61,31 @@ function createDataInput(
 	placingID: number
 ) {
 	return {
-		tournamentId: tournamentID,
-		eventId: tournamentEventID,
+		tournament: {
+			connect: {
+				id: tournamentID
+			}
+		},
+		event: {
+			connect: {
+				id: tournamentEventID
+			}
+		},
 		lowScoreWins: raw.lowScoreWins,
 		score: raw.score,
 		tier: raw.tier,
 		tiered: raw.tiered,
 		tiebreakerRank: raw.tiebreakerRank,
 		lostTieBreaker: raw.lostTiebreaker,
-		placingId: placingID,
-		teamId: teamID
+		placing: {
+			connect: {
+				id: placingID
+			}
+		},
+		team: {
+			connect: {
+				id: teamID
+			}
+		}
 	};
 }

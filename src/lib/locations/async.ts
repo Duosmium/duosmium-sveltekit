@@ -38,7 +38,6 @@ export async function deleteAllLocations() {
 }
 
 export async function addLocation(locationData: object) {
-	console.log(locationData);
 	return await prisma.location.upsert({
 		where: {
 			// @ts-ignore

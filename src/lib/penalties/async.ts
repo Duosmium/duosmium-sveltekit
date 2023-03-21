@@ -72,12 +72,24 @@ function createDataInput(
 	trackID: number | null
 ) {
 	const output = {
-		tournamentId: tournamentID,
-		teamId: teamID
+		tournament: {
+			connect: {
+				id: tournamentID
+			}
+		},
+		team: {
+			connect: {
+				id: teamID
+			}
+		}
 	};
 	if (trackID !== null) {
 		// @ts-ignore
-		output['trackId'] = trackID;
+		output['track'] = {
+			connect: {
+				id: trackID
+			}
+		};
 	}
 	return output;
 }

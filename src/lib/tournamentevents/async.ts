@@ -68,8 +68,16 @@ export async function addTournamentEvent(event: Event, tournamentID: number) {
 
 function createDataInput(event: Event, tournamentID: number, eventID: number) {
 	return {
-		tournamentId: tournamentID,
-		eventId: eventID,
+		tournament: {
+			connect: {
+				id: tournamentID
+			}
+		},
+		event: {
+			connect: {
+				id: eventID
+			}
+		},
 		trial: event.trial,
 		trialed: event.trialed,
 		lowScoreWins: event.lowScoreWins,

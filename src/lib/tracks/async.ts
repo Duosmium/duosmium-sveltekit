@@ -59,8 +59,12 @@ export async function addTrack(track: Track, tournamentID: number) {
 
 function createDataInput(track: Track, tournamentID: number) {
 	return {
-		tournamentId: tournamentID,
-		name: track.name,
+		tournament: {
+			connect: {
+				id: tournamentID
+			}
+		},
+		name: track.name.toString(),
 		medals: track.medals,
 		trophies: track.trophies,
 		maximumPlace: track.maximumPlace

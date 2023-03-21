@@ -47,15 +47,36 @@ export async function addSchool(schoolData: object) {
 			'id'
 		];
 	}
-	return await prisma.school.upsert({
+	const output = await prisma.school.upsert({
 		where: {
 			locationId: locationID
 		},
 		create: {
-			locationId: locationID
+			location: {
+				connect: {
+					id: locationID
+				}
+			}
 		},
 		update: {
-			locationId: locationID
+			location: {
+				connect: {
+					id: locationID
+				}
+			}
 		}
 	});
+	// prisma.location.update({
+	// 	where: {
+	// 		id: locationID
+	// 	},
+	// 	data: {
+	// 		school: {
+	// 			connect: {
+	// 				id: output['id']
+	// 			}
+	// 		}
+	// 	}
+	// });
+	return output;
 }

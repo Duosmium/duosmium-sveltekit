@@ -55,7 +55,11 @@ function createDataInput(
   tournamentID: number
 ) {
   return {
-    tournamentId: tournamentID,
+    tournament: {
+      connect: {
+        id: tournamentID
+      }
+    },
     type: histogram.type,
     url: histogram.url,
   };
