@@ -44,15 +44,7 @@ export async function deleteAllTournaments() {
 }
 
 export async function addTournament(tournament: Tournament, resultID: number) {
-	const locationData = { name: tournament.location, city: '', state: tournament.state };
-	let locationID;
-	try {
-		// @ts-ignore
-		locationID = (await getLocation(tournament.location, '', tournament.state))['id'];
-	} catch (e) {
-		locationID = (await addLocation(locationData))['id'];
-	}
-	const tournamentData = createDataInput(tournament, resultID, locationID);
+	const tournamentData = await createDataInput(tournament, resultID);
 	const tournamentOutput = await prisma.tournament.upsert({
 		where: {
 			resultId: resultID
@@ -87,9 +79,16 @@ export async function addTournament(tournament: Tournament, resultID: number) {
 	return tournamentOutput;
 }
 
-function createDataInput(tournament: Tournament, resultID: number, locationID: number) {
+async function createDataInput(tournament: Tournament, resultID: number) {
+	const locationData = { name: tournament.location, city: '', state: tournament.state };
+	let locationID;
+	try {
+		// @ts-ignore
+		locationID = (await getLocation(tournament.location, '', tournament.state))['id'];
+	} catch (e) {
+		locationID = (await addLocation(locationData))['id'];
+	}
 	return {
-		// locationId: locationID,
 		level: <Level>tournament.level,
 		division: <Division>tournament.division,
 		year: tournament.year,
@@ -115,7 +114,6 @@ function createDataInput(tournament: Tournament, resultID: number, locationID: n
 		hasTracks: tournament.hasTracks,
 		largestPlace: tournament.largestPlace,
 		nonExhibitionTeamsCount: tournament.nonExhibitionTeamsCount,
-		// resultId: resultID
 		location: {
 			connect: {
 				id: locationID

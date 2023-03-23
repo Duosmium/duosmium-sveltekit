@@ -7,21 +7,23 @@ import { getEvent } from '../events/async';
 import { getTournamentEvent } from '../tournamentevents/async';
 import { getTeam } from '../teams/async';
 import { getTrack } from '../tracks/async';
-import { addRaw } from "../raws/async";
+import { addRaw } from '../raws/async';
 
-export async function getPlacing(tournamentID: number, eventID: number, teamID: number) {
+export async function getPlacing(eventID: number, teamID: number) {
 	return await prisma.placing.findUniqueOrThrow({
 		where: {
-			tournamentId_eventId_teamId: { tournamentId: tournamentID, eventId: eventID, teamId: teamID }
+			eventId_teamId: {
+				eventId: eventID,
+				teamId: teamID
+			}
 		}
 	});
 }
 
-export async function tournamentExists(tournamentID: number, eventID: number, teamID: number) {
+export async function tournamentExists(eventID: number, teamID: number) {
 	return (
 		(await prisma.placing.count({
 			where: {
-				tournamentId: tournamentID,
 				eventId: eventID,
 				teamId: teamID
 			}
@@ -29,10 +31,13 @@ export async function tournamentExists(tournamentID: number, eventID: number, te
 	);
 }
 
-export async function deletePlacing(tournamentID: number, eventID: number, teamID: number) {
+export async function deletePlacing(eventID: number, teamID: number) {
 	return await prisma.placing.delete({
 		where: {
-			tournamentId_eventId_teamId: { tournamentId: tournamentID, eventId: eventID, teamId: teamID }
+			eventId_teamId: {
+				eventId: eventID,
+				teamId: teamID
+			}
 		}
 	});
 }
@@ -56,19 +61,17 @@ export async function addPlacing(placing: Placing, tournamentID: number) {
 	const placingData = createDataInput(placing, tournamentID, tournamentEventID, teamID, trackID);
 	const placingOutput = await prisma.placing.upsert({
 		where: {
-			tournamentId_eventId_teamId: {
-				tournamentId: tournamentID,
+			eventId_teamId: {
 				eventId: eventID,
 				teamId: teamID
 			}
 		},
-		// @ts-ignore
 		create: placingData,
 		update: placingData
 	});
 	const placingID = placingOutput['id'];
 	if (placing.raw !== undefined) {
-		await addRaw(placing.raw, tournamentID, tournamentEventID, teamID, placingID);
+		await addRaw(placing.raw, tournamentEventID, teamID, placingID);
 	}
 	return placingOutput;
 }

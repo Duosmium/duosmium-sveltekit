@@ -45,12 +45,18 @@ export async function deleteAllTeams() {
 }
 
 export async function addTeam(team: Team, tournamentID: number) {
-	const schoolData = { name: team.school, city: (team.city === undefined ? '' : team.city), state: team.state };
+	const locationData = {
+		name: team.school,
+		city: team.city === undefined ? '' : team.city,
+		state: team.state
+	};
 	let locationID;
 	try {
-		locationID = (await getLocation(schoolData.name, schoolData.city, schoolData.state))['id'];
+		locationID = (await getLocation(locationData.name, locationData.city, locationData.state))[
+			'id'
+		];
 	} catch (e) {
-		locationID = (await addLocation(schoolData))['id'];
+		locationID = (await addLocation(locationData))['id'];
 	}
 	let trackID = null;
 	if (team.track) {
@@ -66,6 +72,7 @@ export async function addTeam(team: Team, tournamentID: number) {
 		},
 		// @ts-ignore
 		create: teamData,
+		// @ts-ignore
 		update: teamData
 	});
 }

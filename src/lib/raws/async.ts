@@ -13,7 +13,7 @@ export async function getRaw(placingID: number) {
 	});
 }
 
-export async function RawExists(placingID: number) {
+export async function rawExists(placingID: number) {
 	return (
 		(await prisma.raw.count({
 			where: {
@@ -37,12 +37,11 @@ export async function deleteAllRaws() {
 
 export async function addRaw(
 	raw: Raw,
-	tournamentID: number,
 	tournamentEventID: number,
 	teamID: number,
 	placingID: number
 ) {
-	const rawData = createDataInput(raw, tournamentID, tournamentEventID, teamID, placingID);
+	const rawData = createDataInput(raw, tournamentEventID, teamID, placingID);
 	return await prisma.raw.upsert({
 		where: {
 			placingId: placingID
@@ -53,19 +52,8 @@ export async function addRaw(
 	});
 }
 
-function createDataInput(
-	raw: Raw,
-	tournamentID: number,
-	tournamentEventID: number,
-	teamID: number,
-	placingID: number
-) {
+function createDataInput(raw: Raw, tournamentEventID: number, teamID: number, placingID: number) {
 	return {
-		tournament: {
-			connect: {
-				id: tournamentID
-			}
-		},
 		event: {
 			connect: {
 				id: tournamentEventID

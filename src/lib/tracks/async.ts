@@ -10,7 +10,7 @@ export async function getTrack(tournamentID: number, name: string) {
 		where: {
 			tournamentId_name: {
 				tournamentId: tournamentID,
-				name: name
+				name: name.toString()
 			}
 		}
 	});
@@ -21,7 +21,7 @@ export async function trackExists(tournamentID: number, name: string) {
 		(await prisma.track.count({
 			where: {
 				tournamentId: tournamentID,
-				name: name
+				name: name.toString()
 			}
 		})) > 0
 	);
@@ -32,7 +32,7 @@ export async function deleteTrack(tournamentID: number, name: string) {
 		where: {
 			tournamentId_name: {
 				tournamentId: tournamentID,
-				name: name
+				name: name.toString()
 			}
 		}
 	});
@@ -48,7 +48,7 @@ export async function addTrack(track: Track, tournamentID: number) {
 		where: {
 			tournamentId_name: {
 				tournamentId: tournamentID,
-				name: track.name
+				name: track.name.toString()
 			}
 		},
 		// @ts-ignore

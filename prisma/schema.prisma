@@ -153,7 +153,7 @@ model Placing {
   consideredForTeamPoints          Boolean         @default(true)
   isolatedPoints                   Int
   isolatedTrackPoints              Int?
-  points                           Int
+  points                           Int?
   trackPoints                      Int?
   pointsAffectedByExhibition       Boolean         @default(false)
   pointsLimitedByMaximumPlace      Boolean         @default(false)
@@ -162,7 +162,7 @@ model Placing {
   track                            Track?          @relation(fields: [trackId], references: [id], onDelete: SetNull)
   trackId                          Int?
 
-  @@unique([tournamentId, eventId, teamId])
+  @@unique([eventId, teamId])
 }
 
 model Penalty {
@@ -223,7 +223,7 @@ model Location {
   latitude    Float?
   longitude   Float?
   tournaments Tournament[]
-  teams       Team[]
+  Team        Team[]
 
   @@unique([name, city, state])
 }

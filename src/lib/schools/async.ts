@@ -35,18 +35,15 @@ export async function deleteAllSchools() {
 }
 
 export async function addSchool(schoolData: object) {
-	let locationID;
+	let location;
 	try {
 		// @ts-ignore
-		locationID = (await getLocation(schoolData['name'], schoolData['city'], schoolData['state']))[
-			'id'
-		];
+		location = await getLocation(schoolData['name'], schoolData['city'], schoolData['state']);
 	} catch (e) {
 		// @ts-ignore
-		locationID = (await addLocation(schoolData['name'], schoolData['city'], schoolData['state']))[
-			'id'
-		];
+		location = await addLocation(schoolData['name'], schoolData['city'], schoolData['state']);
 	}
+	const locationID = location['id'];
 	const output = await prisma.school.upsert({
 		where: {
 			locationId: locationID
@@ -78,5 +75,6 @@ export async function addSchool(schoolData: object) {
 	// 		}
 	// 	}
 	// });
+	console.log(`${locationID} Success`);
 	return output;
 }

@@ -8,10 +8,10 @@ import { load } from 'js-yaml';
 import { getInterpreter } from './interpreter';
 import { addTournament } from '../tournaments/async';
 import { prisma } from '../global/prisma';
-import { addHistogram } from "../histograms/async";
-import { addHistoData } from "../histodata/async";
-import { getTournamentEvent } from "../tournamentevents/async";
-import { getEvent } from "../events/async";
+import { addHistogram } from '../histograms/async';
+import { addHistoData } from '../histodata/async';
+import { getTournamentEvent } from '../tournamentevents/async';
+import { getEvent } from '../events/async';
 
 export async function getResult(duosmiumID: string) {
 	return await prisma.result.findUniqueOrThrow({
@@ -66,6 +66,7 @@ export async function addResult(interpreter: Interpreter) {
 		}
 	});
 	const resultID = resultOutput['id'];
+	// TODO: avoid race conditions (keep trying until it works?)
 	const tournamentID = (await addTournament(interpreter.tournament, resultID))['id'];
 	if (interpreter.histograms !== undefined) {
 		const histogramID = (await addHistogram(interpreter.histograms, tournamentID))['id'];
