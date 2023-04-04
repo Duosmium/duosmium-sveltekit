@@ -4,6 +4,7 @@
 // @ts-ignore
 import { HistoData } from 'sciolyff/interpreter';
 import { prisma } from '../global/prisma';
+import { addHistogram, createHistogramDataInput, getHistogram } from "../histograms/async";
 
 export async function getHistoData(eventID: number) {
 	return await prisma.histoData.findUniqueOrThrow({
@@ -35,11 +36,11 @@ export async function deleteAllHistoDatas() {
 	return await prisma.histoData.deleteMany({});
 }
 
-export async function addHistoData(histoData: HistoData, eventID: number, parentID: number) {
-	const histoDataData = createDataInput(histoData, eventID, parentID);
+export async function addHistoData(histoDataData: object) {
 	return await prisma.histoData.upsert({
 		where: {
-			eventId: eventID
+			// @ts-ignore
+			eventId: histoDataData.event.connect.id
 		},
 		// @ts-ignore
 		create: histoDataData,
@@ -47,7 +48,13 @@ export async function addHistoData(histoData: HistoData, eventID: number, parent
 	});
 }
 
-function createDataInput(histoData: HistoData, eventID: number, parentID: number) {
+export async function createHistoDataDataInput(histoData: HistoData, tournamentID: number, eventID: number) {
+	let parentID;
+	try {
+		parentID = (await getHistogram(tournamentID))['id'];
+	} catch (e) {
+		parentID = (await addHistogram(await createHistogramDataInput(histoData.parent, tournamentID)))['id'];
+	}
 	return {
 		event: {
 			connect: {

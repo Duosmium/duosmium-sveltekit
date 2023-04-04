@@ -44,30 +44,14 @@ export async function deleteAllTeams() {
 	return await prisma.team.deleteMany({});
 }
 
-export async function addTeam(team: Team, tournamentID: number) {
-	const locationData = {
-		name: team.school,
-		city: team.city === undefined ? '' : team.city,
-		state: team.state
-	};
-	let locationID;
-	try {
-		locationID = (await getLocation(locationData.name, locationData.city, locationData.state))[
-			'id'
-		];
-	} catch (e) {
-		locationID = (await addLocation(locationData))['id'];
-	}
-	let trackID = null;
-	if (team.track) {
-		trackID = (await getTrack(tournamentID, team.track.name))['id'];
-	}
-	const teamData = createDataInput(team, tournamentID, locationID, trackID);
+export async function addTeam(teamData: object) {
 	return await prisma.team.upsert({
 		where: {
 			tournamentId_number: {
-				tournamentId: tournamentID,
-				number: team.number
+				// @ts-ignore
+				tournamentId: teamData.tournament.connect.id,
+				// @ts-ignore
+				number: teamData.number
 			}
 		},
 		// @ts-ignore
@@ -77,12 +61,27 @@ export async function addTeam(team: Team, tournamentID: number) {
 	});
 }
 
-function createDataInput(
+export async function createTeamDataInput(
 	team: Team,
-	tournamentID: number,
-	locationID: number,
-	trackID: number | null
+	tournamentID: number
 ) {
+	const locationData = {
+		name: team.school,
+		city: team.city === undefined ? '' : team.city,
+		state: team.state
+	};
+	let locationID;
+	try {
+		locationID = (await getLocation(locationData.name, locationData.city, locationData.state))[
+			'id'
+			];
+	} catch (e) {
+		locationID = (await addLocation(locationData))['id'];
+	}
+	let trackID = null;
+	if (team.track) {
+		trackID = (await getTrack(tournamentID, team.track.name))['id'];
+	}
 	const output = {
 		tournament: {
 			connect: {

@@ -49,3 +49,11 @@ export async function addLocation(locationData: object) {
 		update: locationData
 	});
 }
+
+export async function createLocationDataInput(name: string, city: string | undefined, state: string) {
+	return {
+		name: name,
+		city: city === undefined ? '' : city,
+		state: state
+	}
+}

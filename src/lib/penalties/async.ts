@@ -44,19 +44,14 @@ export async function deleteAllPenalties() {
 	return await prisma.penalty.deleteMany({});
 }
 
-export async function addPenalty(penalty: Penalty, tournamentID: number) {
-	// @ts-ignore
-	const teamID = (await getTeam(tournamentID, penalty.team?.number))['id'];
-	let trackID = null;
-	if (penalty.team?.track) {
-		trackID = (await getTrack(tournamentID, penalty.team.track.name))['id'];
-	}
-	const penaltyData = createDataInput(penalty, tournamentID, teamID, trackID);
+export async function addPenalty(penaltyData: object) {
 	return await prisma.penalty.upsert({
 		where: {
 			tournamentId_teamId: {
-				tournamentId: tournamentID,
-				teamId: teamID
+				// @ts-ignore
+				tournamentId: penaltyData.tournament.connect.id,
+				// @ts-ignore
+				teamId: penaltyData.team.connect.id
 			}
 		},
 		// @ts-ignore
@@ -65,11 +60,9 @@ export async function addPenalty(penalty: Penalty, tournamentID: number) {
 	});
 }
 
-function createDataInput(
+export async function createPenaltyDataInput(
 	penalty: Penalty,
 	tournamentID: number,
-	teamID: number,
-	trackID: number | null
 ) {
 	const output = {
 		tournament: {
@@ -79,15 +72,15 @@ function createDataInput(
 		},
 		team: {
 			connect: {
-				id: teamID
+				id: (await getTeam(tournamentID, penalty.team?.number))['id']
 			}
 		}
 	};
-	if (trackID !== null) {
+	if (penalty.team?.track) {
 		// @ts-ignore
 		output['track'] = {
 			connect: {
-				id: trackID
+				id: (await getTrack(tournamentID, penalty.team.track.name))['id']
 			}
 		};
 	}

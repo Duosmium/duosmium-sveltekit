@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 // @ts-ignore
 
-import { Placing } from 'sciolyff/interpreter';
-import { prisma } from '$lib/global/prisma';
-import { getEvent } from '../events/async';
-import { getTournamentEvent } from '../tournamentevents/async';
-import { getTeam } from '../teams/async';
-import { getTrack } from '../tracks/async';
-import { addRaw } from '../raws/async';
+import { Placing } from "sciolyff/interpreter";
+import { prisma } from "$lib/global/prisma";
+import { getEvent } from "../events/async";
+import { createTournamentEventDataInput, getTournamentEvent } from "../tournamentevents/async";
+import { getTeam } from "../teams/async";
+import { getTrack } from "../tracks/async";
+import { createTournamentDataInput } from "../tournaments/async";
 
 export async function getPlacing(eventID: number, teamID: number) {
 	return await prisma.placing.findUniqueOrThrow({
@@ -46,43 +46,32 @@ export async function deleteAllPlacings() {
 	return await prisma.placing.deleteMany({});
 }
 
-export async function addPlacing(placing: Placing, tournamentID: number) {
+export async function addPlacing(placingData: object) {
 	// @ts-ignore
-	const eventID = (await getEvent(placing.event.name))['id'];
-	const tournamentEventID = (await getTournamentEvent(tournamentID, eventID))['id'];
+	const tournamentEventID = placingData.event.connect.id;
 	// @ts-ignore
-	const teamID = (await getTeam(tournamentID, placing.team?.number))['id'];
-	let trackID = null;
-	// @ts-ignore
-	if (placing.team.track) {
-		// @ts-ignore
-		trackID = (await getTrack(tournamentID, placing.team.track.name))['id'];
-	}
-	const placingData = createDataInput(placing, tournamentID, tournamentEventID, teamID, trackID);
-	const placingOutput = await prisma.placing.upsert({
+	const teamID = placingData.team.connect.id;
+	return await prisma.placing.upsert({
 		where: {
 			eventId_teamId: {
-				eventId: eventID,
+				eventId: tournamentEventID,
 				teamId: teamID
 			}
 		},
 		create: placingData,
 		update: placingData
 	});
-	const placingID = placingOutput['id'];
-	if (placing.raw !== undefined) {
-		await addRaw(placing.raw, tournamentEventID, teamID, placingID);
-	}
-	return placingOutput;
 }
 
-function createDataInput(
+export async function createPlacingDataInput(
 	placing: Placing,
-	tournamentID: number,
-	tournamentEventID: number,
-	teamID: number,
-	trackID: number | null
+	tournamentID: number
 ) {
+	// @ts-ignore
+	const eventID = (await getEvent(placing.event.name))['id'];
+	const tournamentEventID = (await getTournamentEvent(tournamentID, eventID))['id'];
+	// @ts-ignore
+	const teamID = (await getTeam(tournamentID, placing.team?.number))['id'];
 	const output = {
 		tournament: {
 			connect: {
@@ -118,7 +107,7 @@ function createDataInput(
 		pointsLimitedByMaximumPlace: placing.pointsLimitedByMaximumPlace,
 		exhibitionPlacingsBehind: placing._exhibitionPlacingsBehind
 	};
-	if (trackID !== null) {
+	if (placing.team.track !== undefined) {
 		// @ts-ignore
 		output['trackPlace'] = placing.trackPlace;
 		// @ts-ignore
@@ -130,7 +119,7 @@ function createDataInput(
 		// @ts-ignore
 		output['track'] = {
 			connect: {
-				id: trackID
+				id: (await getTrack(tournamentID, placing.team.track.name))['id']
 			}
 		};
 	}

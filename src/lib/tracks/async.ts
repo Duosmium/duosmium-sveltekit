@@ -42,13 +42,14 @@ export async function deleteAllTracks() {
 	return await prisma.track.deleteMany({});
 }
 
-export async function addTrack(track: Track, tournamentID: number) {
-	const trackData = createDataInput(track, tournamentID);
+export async function addTrack(trackData: object) {
 	return await prisma.track.upsert({
 		where: {
 			tournamentId_name: {
-				tournamentId: tournamentID,
-				name: track.name.toString()
+				// @ts-ignore
+				tournamentId: trackData.tournament.connect.id,
+				// @ts-ignore
+				name: trackData.name
 			}
 		},
 		// @ts-ignore
@@ -57,7 +58,7 @@ export async function addTrack(track: Track, tournamentID: number) {
 	});
 }
 
-function createDataInput(track: Track, tournamentID: number) {
+export async function createTrackDataInput(track: Track, tournamentID: number) {
 	return {
 		tournament: {
 			connect: {

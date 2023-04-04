@@ -4,14 +4,15 @@
 // @ts-ignore
 import { Tournament } from 'sciolyff/interpreter';
 import { addLocation } from '$lib/locations/async';
-import { addTournamentEvent } from '../tournamentevents/async';
-import { addTrack } from '../tracks/async';
-import { addTeam } from '../teams/async';
+import { addTournamentEvent, createTournamentEventDataInput } from "../tournamentevents/async";
+import { addTrack, createTrackDataInput } from "../tracks/async";
+import { addTeam, createTeamDataInput } from "../teams/async";
 import { getLocation } from '../locations/async';
 import { prisma } from '../global/prisma';
+// @ts-ignore
 import type { Division, Level } from '@prisma/client';
-import { addPlacing } from '../placings/async';
-import { addPenalty } from '../penalties/async';
+import { addPlacing, createPlacingDataInput } from "../placings/async";
+import { addPenalty, createPenaltyDataInput } from "../penalties/async";
 
 export async function getTournament(resultID: number) {
 	return await prisma.tournament.findUniqueOrThrow({
@@ -43,43 +44,19 @@ export async function deleteAllTournaments() {
 	return await prisma.tournament.deleteMany({});
 }
 
-export async function addTournament(tournament: Tournament, resultID: number) {
-	const tournamentData = await createDataInput(tournament, resultID);
-	const tournamentOutput = await prisma.tournament.upsert({
+export async function addTournament(tournamentData: object) {
+	return await prisma.tournament.upsert({
 		where: {
-			resultId: resultID
+			// @ts-ignore
+			resultId: tournamentData.result.connect.id
 		},
 		// @ts-ignore
 		create: tournamentData,
 		update: tournamentData
 	});
-	const tournamentID = tournamentOutput['id'];
-	// @ts-ignore
-	for (const event of tournament.events) {
-		await addTournamentEvent(event, tournamentID);
-	}
-	// @ts-ignore
-	for (const track of tournament.tracks) {
-		await addTrack(track, tournamentID);
-	}
-	// @ts-ignore
-	for (const team of tournament.teams) {
-		await addTeam(team, tournamentID);
-	}
-	// @ts-ignore
-	for (const placing of tournament.placings) {
-		// @ts-ignore
-		await addPlacing(placing, tournamentID);
-	}
-	// @ts-ignore
-	for (const penalty of tournament.penalties) {
-		// @ts-ignore
-		await addPenalty(penalty, tournamentID);
-	}
-	return tournamentOutput;
 }
 
-async function createDataInput(tournament: Tournament, resultID: number) {
+export async function createTournamentDataInput(tournament: Tournament, resultID: number) {
 	const locationData = { name: tournament.location, city: '', state: tournament.state };
 	let locationID;
 	try {

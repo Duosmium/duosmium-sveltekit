@@ -45,3 +45,7 @@ export async function addEvent(eventData: object) {
 		update: eventData
 	});
 }
+
+export async function createEventDataInput(name: string) {
+	return { name: name };
+}

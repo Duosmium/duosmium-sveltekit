@@ -6,9 +6,9 @@ import { deleteAllLocations } from '../../../lib/locations/async';
 
 export const actions = {
 	default: async ({ request }) => {
-		// await deleteAllResults();
-		// await deleteAllLocations();
-		// await deleteAllEvents();
+		await deleteAllResults();
+		await deleteAllLocations();
+		await deleteAllEvents();
 		const data = await request.formData();
 		const allFiles = data.getAll('yaml');
 		allFiles.forEach((file) => {

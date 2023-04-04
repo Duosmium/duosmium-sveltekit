@@ -35,11 +35,11 @@ export async function deleteAllHistograms() {
 	return await prisma.histogram.deleteMany({});
 }
 
-export async function addHistogram(histogram: Histogram, tournamentID: number) {
-	const histogramData = createDataInput(histogram, tournamentID);
+export async function addHistogram(histogramData: object) {
 	return await prisma.histogram.upsert({
 		where: {
-			tournamentId: tournamentID
+			// @ts-ignore
+			tournamentId: histogramData.tournament.connect.id
 		},
 		// @ts-ignore
 		create: histogramData,
@@ -47,7 +47,7 @@ export async function addHistogram(histogram: Histogram, tournamentID: number) {
 	});
 }
 
-function createDataInput(histogram: Histogram, tournamentID: number) {
+export async function createHistogramDataInput(histogram: Histogram, tournamentID: number) {
 	return {
 		tournament: {
 			connect: {
