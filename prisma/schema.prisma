@@ -1,10 +1,14 @@
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = []
+  schemas    = ["public"]
+  directUrl  = env("DIRECT_URL")
 }
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["multiSchema", "postgresqlExtensions"]
 }
 
 // SciolyFF
@@ -15,12 +19,16 @@ model Result {
   tournament Tournament?
   logo       String?
   color      String?
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+
+  @@schema("public")
 }
 
 model Tournament {
   id                            Int               @id @default(autoincrement())
   teams                         Team[]
-  events                        TournamentEvent[]
+  tournamentEvents              TournamentEvent[]
   tracks                        Track[]
   placings                      Placing[]
   penalties                     Penalty[]
@@ -57,6 +65,9 @@ model Tournament {
   result                        Result?           @relation(fields: [resultId], references: [id], onDelete: Cascade)
   resultId                      Int?              @unique
   histogramId                   Int?
+  sourceData                    Json?             @db.JsonB
+
+  @@schema("public")
 }
 
 model Team {
@@ -83,14 +94,18 @@ model Team {
   trackMedalCounts           Int[]
   trackTrialEventMedalCounts Int[]
   raws                       Raw[]
+  sourceData                 Json?      @db.JsonB
 
   @@unique([tournamentId, number])
+  @@schema("public")
 }
 
 model Event {
   id               Int               @id @default(autoincrement())
   name             String            @unique
   tournamentEvents TournamentEvent[]
+
+  @@schema("public")
 }
 
 model TournamentEvent {
@@ -108,8 +123,10 @@ model TournamentEvent {
   histoData     HistoData?
   medals        Int?
   maximumPlace  Int
+  sourceData    Json?      @db.JsonB
 
   @@unique([tournamentId, eventId])
+  @@schema("public")
 }
 
 model Track {
@@ -123,16 +140,18 @@ model Track {
   medals       Int
   trophies     Int
   maximumPlace Int
+  sourceData   Json?       @db.JsonB
 
   @@unique([tournamentId, name])
+  @@schema("public")
 }
 
 model Placing {
   id                               Int             @id @default(autoincrement())
   tournament                       Tournament      @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
   tournamentId                     Int
-  event                            TournamentEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  eventId                          Int
+  tournamentEvent                  TournamentEvent @relation(fields: [tournamentEventId], references: [id], onDelete: Cascade)
+  tournamentEventId                Int
   team                             Team            @relation(fields: [teamId], references: [id], onDelete: Cascade)
   teamId                           Int
   participated                     Boolean         @default(true)
@@ -161,8 +180,10 @@ model Placing {
   exhibitionPlacingsBehind         Int             @default(0)
   track                            Track?          @relation(fields: [trackId], references: [id], onDelete: SetNull)
   trackId                          Int?
+  sourceData                       Json?           @db.JsonB
 
-  @@unique([eventId, teamId])
+  @@unique([tournamentEventId, teamId])
+  @@schema("public")
 }
 
 model Penalty {
@@ -174,36 +195,43 @@ model Penalty {
   points       Int
   track        Track?     @relation(fields: [trackId], references: [id], onDelete: SetNull)
   trackId      Int?
+  sourceData   Json?      @db.JsonB
 
   @@unique([tournamentId, teamId])
+  @@schema("public")
 }
 
 model Raw {
-  id             Int             @id @default(autoincrement())
-  event          TournamentEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  eventId        Int
-  lowScoreWins   Boolean         @default(false)
-  score          Float
-  tier           Int             @default(1)
-  tiered         Boolean         @default(false)
-  tiebreakerRank Int             @default(1)
-  lostTieBreaker Boolean         @default(false)
-  placing        Placing         @relation(fields: [placingId], references: [id], onDelete: Cascade)
-  placingId      Int             @unique
-  team           Team            @relation(fields: [teamId], references: [id], onDelete: Cascade)
-  teamId         Int
+  id                Int             @id @default(autoincrement())
+  tournamentEvent   TournamentEvent @relation(fields: [tournamentEventId], references: [id], onDelete: Cascade)
+  tournamentEventId Int
+  lowScoreWins      Boolean         @default(false)
+  score             Float
+  tier              Int             @default(1)
+  tiered            Boolean         @default(false)
+  tiebreakerRank    Int             @default(1)
+  lostTieBreaker    Boolean         @default(false)
+  placing           Placing         @relation(fields: [placingId], references: [id], onDelete: Cascade)
+  placingId         Int             @unique
+  team              Team            @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  teamId            Int
+  sourceData        Json?           @db.JsonB
+
+  @@schema("public")
 }
 
 model HistoData {
-  id       Int             @id @default(autoincrement())
-  parent   Histogram       @relation(fields: [parentId], references: [id], onDelete: Cascade)
-  parentId Int
-  event    TournamentEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  eventId  Int             @unique
-  start    Float
-  width    Float
-  counts   Float[]
-  info     Json?           @db.JsonB
+  id                Int             @id @default(autoincrement())
+  parent            Histogram       @relation(fields: [parentId], references: [id], onDelete: Cascade)
+  parentId          Int
+  tournamentEvent   TournamentEvent @relation(fields: [tournamentEventId], references: [id], onDelete: Cascade)
+  tournamentEventId Int             @unique
+  start             Float
+  width             Float
+  counts            Float[]
+  info              Json?           @db.JsonB
+
+  @@schema("public")
 }
 
 model Histogram {
@@ -213,6 +241,9 @@ model Histogram {
   url          String?
   data         HistoData[]
   tournamentId Int         @unique
+  sourceData   Json?       @db.JsonB
+
+  @@schema("public")
 }
 
 model Location {
@@ -226,6 +257,7 @@ model Location {
   Team        Team[]
 
   @@unique([name, city, state])
+  @@schema("public")
 }
 
 enum Level {
@@ -233,27 +265,14 @@ enum Level {
   Regionals
   States
   Nationals
+
+  @@schema("public")
 }
 
 enum Division {
   A
   B
   C
-}
 
-// User policy, organizations, etc.
-
-model Organization {
-  id             Int          @id @default(autoincrement())
-  organizationId String       @unique
-  name           String?
-  policy         Json         @default("{}") @db.JsonB
-  userPolicies   UserPolicy[]
-}
-
-model UserPolicy {
-  id            Int            @id @default(autoincrement())
-  user_id       String         @unique @db.Uuid
-  organizations Organization[]
-  policy        Json           @default("{}") @db.JsonB
+  @@schema("public")
 }

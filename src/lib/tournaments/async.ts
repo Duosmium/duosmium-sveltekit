@@ -103,3 +103,46 @@ export async function createTournamentDataInput(tournament: Tournament, resultID
 		}
 	};
 }
+
+export async function createTournamentDataInputExperimental(tournament: Tournament) {
+	const locationData = { name: tournament.location, city: '', state: tournament.state };
+	let locationID;
+	try {
+		// @ts-ignore
+		locationID = (await getLocation(tournament.location, '', tournament.state))['id'];
+	} catch (e) {
+		locationID = (await addLocation(locationData))['id'];
+	}
+	return {
+		level: <Level>tournament.level,
+		division: <Division>tournament.division,
+		year: tournament.year,
+		name: tournament.name,
+		shortName: tournament.shortName,
+		medals: tournament.medals,
+		trophies: tournament.trophies,
+		bids: tournament.bids,
+		bidsPerSchool: tournament.bidsPerSchool,
+		worstPlacingsDropped: tournament.worstPlacingsDropped,
+		exemptPlacings: tournament.exemptPlacings,
+		reverseScoring: tournament.reverseScoring,
+		maximumPlace: tournament.maximumPlace,
+		perEventN: tournament.perEventN,
+		nOffset: tournament.nOffset,
+		startDate: tournament.startDate,
+		endDate: tournament.endDate,
+		awardsDate: tournament.awardsDate,
+		testRelease: tournament.testRelease,
+		hasCustomMaximumPlace: tournament.hasCustomMaximumPlace,
+		hasTies: tournament.hasTies,
+		hasTiesOutsideOfMaximumPlaces: tournament.hasTiesOutsideOfMaximumPlaces,
+		hasTracks: tournament.hasTracks,
+		largestPlace: tournament.largestPlace,
+		nonExhibitionTeamsCount: tournament.nonExhibitionTeamsCount,
+		location: {
+			connect: {
+				id: locationID
+			}
+		}
+	};
+}
