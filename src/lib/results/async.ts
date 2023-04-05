@@ -40,11 +40,15 @@ export async function deleteAllResults() {
 	return await prisma.result.deleteMany({});
 }
 
-export async function addResultFromYAMLFile(file: File) {
+export async function addResultFromYAMLFile(file: File, callback=function (name: string) {
+	console.log(`Result ${name} added!`);
+}) {
 	const yaml = await file.text();
 	// @ts-ignore
 	const obj: object = load(yaml);
-	await addResult(await createResultDataInput(getInterpreter(obj)));
+	const interpreter: Interpreter = getInterpreter(obj);
+	await addResult(await createResultDataInput(interpreter));
+	callback(generateFilename(interpreter));
 }
 
 export async function addResult(resultData: object) {
