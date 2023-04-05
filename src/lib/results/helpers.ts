@@ -37,7 +37,7 @@ export function generateFilename(interpreter: Interpreter) {
 		throw new Error('Tournament has no start date!');
 	}
 	let output = '';
-	output += interpreter.tournament.startDate.getFullYear();
+	output += interpreter.tournament.startDate.getUTCFullYear();
 	output += '-' + (interpreter.tournament.startDate.getUTCMonth() + 1).toString().padStart(2, '0');
 	output += '-' + interpreter.tournament.startDate.getUTCDate().toString().padStart(2, '0');
 	switch (interpreter.tournament.level) {

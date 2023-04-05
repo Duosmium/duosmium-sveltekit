@@ -5,33 +5,33 @@
 import { Track } from 'sciolyff/interpreter';
 import { prisma } from '../global/prisma';
 
-export async function getTrack(tournamentID: number, name: string) {
+export async function getTrack(duosmiumID: string, name: string) {
 	return await prisma.track.findUniqueOrThrow({
 		where: {
-			tournamentId_name: {
-				tournamentId: tournamentID,
+			tournamentDuosmiumId_name: {
+				tournamentDuosmiumId: duosmiumID,
 				name: name.toString()
 			}
 		}
 	});
 }
 
-export async function trackExists(tournamentID: number, name: string) {
+export async function trackExists(duosmiumID: string, name: string) {
 	return (
 		(await prisma.track.count({
 			where: {
-				tournamentId: tournamentID,
+				tournamentDuosmiumId: duosmiumID,
 				name: name.toString()
 			}
 		})) > 0
 	);
 }
 
-export async function deleteTrack(tournamentID: number, name: string) {
+export async function deleteTrack(duosmiumID: string, name: string) {
 	return await prisma.track.delete({
 		where: {
-			tournamentId_name: {
-				tournamentId: tournamentID,
+			tournamentDuosmiumId_name: {
+				tournamentDuosmiumId: duosmiumID,
 				name: name.toString()
 			}
 		}
@@ -45,11 +45,11 @@ export async function deleteAllTracks() {
 export async function addTrack(trackData: object) {
 	return await prisma.track.upsert({
 		where: {
-			tournamentId_name: {
+			tournamentDuosmiumId_name: {
 				// @ts-ignore
-				tournamentId: trackData.tournament.connect.id,
+				tournamentDuosmiumId: trackData.tournamentDuosmiumId,
 				// @ts-ignore
-				name: trackData.name
+				name: trackData.name.toString()
 			}
 		},
 		// @ts-ignore
@@ -58,11 +58,11 @@ export async function addTrack(trackData: object) {
 	});
 }
 
-export async function createTrackDataInput(track: Track, tournamentID: number) {
+export async function createTrackDataInput(track: Track, duosmiumID: string) {
 	return {
 		tournament: {
 			connect: {
-				id: tournamentID
+				resultDuosmiumId: duosmiumID
 			}
 		},
 		name: track.name.toString(),

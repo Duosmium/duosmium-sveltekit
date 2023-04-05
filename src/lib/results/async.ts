@@ -7,6 +7,8 @@ import { generateFilename } from './helpers';
 import { load } from 'js-yaml';
 import { getInterpreter } from './interpreter';
 import { prisma } from "../global/prisma";
+import { createTournamentDataInput } from "../tournaments/async";
+import { createHistogramDataInput } from "../histograms/async";
 
 export async function getResult(duosmiumID: string) {
 	return await prisma.result.findUniqueOrThrow({
@@ -42,12 +44,16 @@ export async function addResultFromYAMLFile(file: File) {
 	const yaml = await file.text();
 	// @ts-ignore
 	const obj: object = load(yaml);
-	await addResult(getInterpreter(obj));
+	await addResult(await createResultDataInput(getInterpreter(obj)));
 }
 
 export async function addResult(resultData: object) {
 	return await prisma.result.upsert({
-		where: resultData,
+		where: {
+			// @ts-ignore
+			duosmiumId: resultData["duosmiumId"]
+		},
+		// @ts-ignore
 		create: resultData,
 		update: resultData
 	});
@@ -55,7 +61,28 @@ export async function addResult(resultData: object) {
 
 export async function createResultDataInput(interpreter: Interpreter) {
 	const duosmiumID = generateFilename(interpreter);
-	return {
-		duosmiumId: duosmiumID
+	const tournamentData = await createTournamentDataInput(interpreter.tournament, duosmiumID);
+	const output = {
+		duosmiumId: duosmiumID,
+		tournament: {
+			connectOrCreate: {
+				create: tournamentData,
+				where: {
+					resultDuosmiumId: duosmiumID
+				}
+			}
+		}
+	};
+	if (interpreter.histograms) {
+		// @ts-ignore
+		output["histogram"] = {
+			connectOrCreate: {
+				create: await createHistogramDataInput(interpreter.histograms, duosmiumID),
+				where: {
+					resultDuosmiumId: duosmiumID
+				}
+			}
+		}
 	}
+	return output;
 }

@@ -4,29 +4,30 @@
 // @ts-ignore
 import { Histogram } from 'sciolyff/interpreter';
 import { prisma } from '../global/prisma';
+import { createHistoDataDataInput } from "../histodata/async";
 
-export async function getHistogram(tournamentID: number) {
+export async function getHistogram(duosmiumID: string) {
 	return await prisma.histogram.findUniqueOrThrow({
 		where: {
-			tournamentId: tournamentID
+			resultDuosmiumId: duosmiumID
 		}
 	});
 }
 
-export async function histogramExists(tournamentID: number) {
+export async function histogramExists(duosmiumID: string) {
 	return (
 		(await prisma.histogram.count({
 			where: {
-				tournamentId: tournamentID
+				resultDuosmiumId: duosmiumID
 			}
 		})) > 0
 	);
 }
 
-export async function deleteHistogram(tournamentID: number) {
+export async function deleteHistogram(duosmiumID: string) {
 	return await prisma.histogram.delete({
 		where: {
-			tournamentId: tournamentID
+			resultDuosmiumId: duosmiumID
 		}
 	});
 }
@@ -47,14 +48,25 @@ export async function addHistogram(histogramData: object) {
 	});
 }
 
-export async function createHistogramDataInput(histogram: Histogram, tournamentID: number) {
-	return {
-		tournament: {
-			connect: {
-				id: tournamentID
+export async function createHistogramDataInput(histogram: Histogram, duosmiumID: string) {
+	const histoDataObjects = [];
+	for (const data of histogram.data) {
+		const thisHistoDataObject = await createHistoDataDataInput(data, duosmiumID);
+		histoDataObjects.push({
+			create: thisHistoDataObject,
+			where: {
+				histogramDuosmiumId_eventName: {
+					histogramDuosmiumId: duosmiumID,
+					eventName: data.event.name
+				}
 			}
-		},
+		})
+	}
+	return {
 		type: histogram.type,
-		url: histogram.url
+		url: histogram.url,
+		data: {
+			connectOrCreate: histoDataObjects
+		}
 	};
 }

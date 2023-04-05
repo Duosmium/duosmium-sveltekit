@@ -2,38 +2,37 @@
 // noinspection ES6RedundantAwait
 
 // @ts-ignore
-import { Event } from 'sciolyff/interpreter';
-import { addEvent, getEvent } from '../events/async';
-import { prisma } from '../global/prisma';
+import { Event } from "sciolyff/interpreter";
+import { prisma } from "../global/prisma";
 
-export async function getTournamentEvent(tournamentID: number, eventID: number) {
+export async function getTournamentEvent(duosmiumID: string, eventName: string) {
 	return await prisma.tournamentEvent.findUniqueOrThrow({
 		where: {
-			tournamentId_eventId: {
-				tournamentId: tournamentID,
-				eventId: eventID
+			tournamentDuosmiumId_eventName: {
+				tournamentDuosmiumId: duosmiumID,
+				eventName: eventName
 			}
 		}
 	});
 }
 
-export async function tournamentEventExists(tournamentID: number, eventID: number) {
+export async function tournamentEventExists(duosmiumID: string, eventName: string) {
 	return (
 		(await prisma.tournamentEvent.count({
 			where: {
-				tournamentId: tournamentID,
-				eventId: eventID
+				tournamentDuosmiumId: duosmiumID,
+				eventName: eventName
 			}
 		})) > 0
 	);
 }
 
-export async function deleteTournamentEvent(tournamentID: number, eventID: number) {
+export async function deleteTournamentEvent(duosmiumID: string, eventName: string) {
 	return await prisma.tournamentEvent.delete({
 		where: {
-			tournamentId_eventId: {
-				tournamentId: tournamentID,
-				eventId: eventID
+			tournamentDuosmiumId_eventName: {
+				tournamentDuosmiumId: duosmiumID,
+				eventName: eventName
 			}
 		}
 	});
@@ -46,11 +45,11 @@ export async function deleteAllTournamentEvents() {
 export async function addTournamentEvent(tournamentEventData: object) {
 	return await prisma.tournamentEvent.upsert({
 		where: {
-			tournamentId_eventId: {
+			tournamentDuosmiumId_eventName: {
 				// @ts-ignore
-				tournamentId: tournamentEventData.tournament.connect.id,
+				tournamentDuosmiumId: tournamentEventData.tournamentDuosmiumId,
 				// @ts-ignore
-				eventId: tournamentEventData.event.connect.id
+				eventName: tournamentEventData.eventName
 			}
 		},
 		// @ts-ignore
@@ -59,23 +58,16 @@ export async function addTournamentEvent(tournamentEventData: object) {
 	});
 }
 
-export async function createTournamentEventDataInput(event: Event, tournamentID: number) {
-	let eventID;
-	try {
-		eventID = (await getEvent(event.name))['id'];
-	} catch (e) {
-		const eventData = { name: event.name };
-		eventID = (await addEvent(eventData))['id'];
-	}
+export async function createTournamentEventDataInput(event: Event, duosmiumID: string) {
 	return {
-		tournament: {
-			connect: {
-				id: tournamentID
-			}
-		},
 		event: {
-			connect: {
-				id: eventID
+			connectOrCreate: {
+				create: {
+					name: event.name
+				},
+				where: {
+					name: event.name
+				}
 			}
 		},
 		trial: event.trial,

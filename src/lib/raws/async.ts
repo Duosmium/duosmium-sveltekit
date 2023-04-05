@@ -2,31 +2,41 @@
 // noinspection ES6RedundantAwait
 
 // @ts-ignore
-import { Raw } from 'sciolyff/interpreter';
+import { Placing, Raw } from 'sciolyff/interpreter';
 import { prisma } from '../global/prisma';
 
-export async function getRaw(placingID: number) {
+export async function getRaw(duosmiumID: string, eventName: string, teamNumber: number) {
 	return await prisma.raw.findUniqueOrThrow({
 		where: {
-			placingId: placingID
+			tournamentDuosmiumId_eventName_teamNumber: {
+				tournamentDuosmiumId: duosmiumID,
+				eventName: eventName,
+				teamNumber: teamNumber
+			}
 		}
 	});
 }
 
-export async function rawExists(placingID: number) {
+export async function rawExists(duosmiumID: string, eventName: string, teamNumber: number) {
 	return (
 		(await prisma.raw.count({
 			where: {
-				placingId: placingID
+				tournamentDuosmiumId: duosmiumID,
+				eventName: eventName,
+				teamNumber: teamNumber
 			}
 		})) > 0
 	);
 }
 
-export async function deleteRaw(placingID: number) {
+export async function deleteRaw(duosmiumID: string, eventName: string, teamNumber: number) {
 	return await prisma.raw.delete({
 		where: {
-			placingId: placingID
+			tournamentDuosmiumId_eventName_teamNumber: {
+				tournamentDuosmiumId: duosmiumID,
+				eventName: eventName,
+				teamNumber: teamNumber
+			}
 		}
 	});
 }
@@ -40,8 +50,14 @@ export async function addRaw(
 ) {
 	return await prisma.raw.upsert({
 		where: {
-			// @ts-ignore
-			placingId: rawData.placing.connect.id
+			tournamentDuosmiumId_eventName_teamNumber: {
+				// @ts-ignore
+				tournamentDuosmiumId: rawData.tournamentDuosmiumId,
+				// @ts-ignore
+				eventName: rawData.eventName,
+				// @ts-ignore
+				teamNumber: rawData.teamNumber
+			}
 		},
 		// @ts-ignore
 		create: rawData,
@@ -49,11 +65,15 @@ export async function addRaw(
 	});
 }
 
-export async function createRawDataInput(raw: Raw, tournamentEventID: number, teamID: number, placingID: number) {
+export async function createRawDataInput(placing: Placing, duosmiumID: string) {
+	const raw = placing.raw;
 	return {
-		event: {
+		tournamentEvent: {
 			connect: {
-				id: tournamentEventID
+				tournamentDuosmiumId_eventName: {
+					tournamentDuosmiumId: duosmiumID,
+					eventName: placing.event.name
+				}
 			}
 		},
 		lowScoreWins: raw.lowScoreWins,
@@ -64,12 +84,19 @@ export async function createRawDataInput(raw: Raw, tournamentEventID: number, te
 		lostTieBreaker: raw.lostTiebreaker,
 		placing: {
 			connect: {
-				id: placingID
+				tournamentDuosmiumId_eventName_teamNumber: {
+					tournamentDuosmiumId: duosmiumID,
+					eventName: placing.event.name,
+					teamNumber: placing.team.number
+				}
 			}
 		},
 		team: {
 			connect: {
-				id: teamID
+				tournamentDuosmiumId_number: {
+					tournamentDuosmiumId: duosmiumID,
+					number: placing.team.number
+				}
 			}
 		}
 	};

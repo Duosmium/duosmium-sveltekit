@@ -6,28 +6,35 @@ import { HistoData } from 'sciolyff/interpreter';
 import { prisma } from '../global/prisma';
 import { addHistogram, createHistogramDataInput, getHistogram } from "../histograms/async";
 
-export async function getHistoData(eventID: number) {
+export async function getHistoData(duosmiumID: string, eventName: string) {
 	return await prisma.histoData.findUniqueOrThrow({
 		where: {
-			eventId: eventID
+			histogramDuosmiumId_eventName: {
+				histogramDuosmiumId: duosmiumID,
+				eventName: eventName
+			}
 		}
 	});
 }
 
-export async function histoDataExists(eventID: number) {
+export async function histoDataExists(duosmiumID: string, eventName: string) {
 	return (
 		(await prisma.histoData.count({
 			where: {
-				eventId: eventID
+				histogramDuosmiumId: duosmiumID,
+				eventName: eventName
 			}
 		})) > 0
 	);
 }
 
-export async function deleteHistoData(eventID: number) {
+export async function deleteHistoData(duosmiumID: string, eventName: string) {
 	return await prisma.histoData.delete({
 		where: {
-			eventId: eventID
+			histogramDuosmiumId_eventName: {
+				histogramDuosmiumId: duosmiumID,
+				eventName: eventName
+			}
 		}
 	});
 }
@@ -48,22 +55,14 @@ export async function addHistoData(histoDataData: object) {
 	});
 }
 
-export async function createHistoDataDataInput(histoData: HistoData, tournamentID: number, eventID: number) {
-	let parentID;
-	try {
-		parentID = (await getHistogram(tournamentID))['id'];
-	} catch (e) {
-		parentID = (await addHistogram(await createHistogramDataInput(histoData.parent, tournamentID)))['id'];
-	}
+export async function createHistoDataDataInput(histoData: HistoData, duosmiumID: string) {
 	return {
-		event: {
+		tournamentEvent: {
 			connect: {
-				id: eventID
-			}
-		},
-		parent: {
-			connect: {
-				id: parentID
+				tournamentDuosmiumId_eventName: {
+					tournamentDuosmiumId: duosmiumID,
+					eventName: histoData.event.name
+				}
 			}
 		},
 		start: histoData.start,

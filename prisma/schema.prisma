@@ -21,7 +21,9 @@ model Result {
   color      String?
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt
+  histogram  Histogram?
 
+  @@index([duosmiumId(sort: Asc)])
   @@schema("public")
 }
 
@@ -32,9 +34,11 @@ model Tournament {
   tracks                        Track[]
   placings                      Placing[]
   penalties                     Penalty[]
-  histogram                     Histogram?
-  location                      Location          @relation(fields: [locationId], references: [id], onDelete: Restrict)
-  locationId                    Int
+  location                      Location          @relation(fields: [locationName, locationCity, locationState, locationCountry], references: [name, city, state, country], onDelete: Restrict)
+  locationName                  String
+  locationCity                  String
+  locationState                 String
+  locationCountry               String            @default("United States")
   level                         Level
   division                      Division
   year                          Int
@@ -62,25 +66,27 @@ model Tournament {
   nonExhibitionTeamsCount       Int
   // _topTeamsPerSchool can be calculated via database queries
   // _teamsEligibleForBids can be calculated via database queries
-  result                        Result?           @relation(fields: [resultId], references: [id], onDelete: Cascade)
-  resultId                      Int?              @unique
-  histogramId                   Int?
-  sourceData                    Json?             @db.JsonB
+  result                        Result?           @relation(fields: [resultDuosmiumId], references: [duosmiumId], onDelete: Cascade)
+  resultDuosmiumId              String?           @unique
 
+  @@index([resultDuosmiumId(sort: Asc)])
   @@schema("public")
 }
 
 model Team {
   id                         Int        @id @default(autoincrement())
   number                     Int
-  location                   Location   @relation(fields: [locationId], references: [id], onDelete: Restrict)
-  locationId                 Int
-  tournament                 Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
-  tournamentId               Int
+  location                   Location   @relation(fields: [locationName, locationCity, locationState, locationCountry], references: [name, city, state, country], onDelete: Restrict)
+  locationName               String
+  locationCity               String
+  locationState              String
+  locationCountry            String     @default("United States")
+  tournament                 Tournament @relation(fields: [tournamentDuosmiumId], references: [resultDuosmiumId], onDelete: Cascade)
+  tournamentDuosmiumId       String
   placings                   Placing[]
   penalties                  Penalty[]
-  track                      Track?     @relation(fields: [trackId], references: [id], onDelete: SetNull)
-  trackId                    Int?
+  track                      Track?     @relation(fields: [tournamentDuosmiumId, trackName], references: [tournamentDuosmiumId, name], onDelete: SetNull)
+  trackName                  String?
   rank                       Int
   trackRank                  Int?
   points                     Int
@@ -94,9 +100,9 @@ model Team {
   trackMedalCounts           Int[]
   trackTrialEventMedalCounts Int[]
   raws                       Raw[]
-  sourceData                 Json?      @db.JsonB
 
-  @@unique([tournamentId, number])
+  @@unique([tournamentDuosmiumId, number])
+  @@index([tournamentDuosmiumId(sort: Asc), number(sort: Asc)])
   @@schema("public")
 }
 
@@ -105,55 +111,56 @@ model Event {
   name             String            @unique
   tournamentEvents TournamentEvent[]
 
+  @@index([name(sort: Asc)])
   @@schema("public")
 }
 
 model TournamentEvent {
-  id            Int        @id @default(autoincrement())
-  tournament    Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
-  tournamentId  Int
-  event         Event      @relation(fields: [eventId], references: [id], onDelete: Restrict)
-  eventId       Int
-  placings      Placing[]
-  raws          Raw[]
-  trial         Boolean    @default(false)
-  trialed       Boolean    @default(false)
-  lowScoreWins  Boolean    @default(false)
-  highScoreWins Boolean    @default(true)
-  histoData     HistoData?
-  medals        Int?
-  maximumPlace  Int
-  sourceData    Json?      @db.JsonB
+  id                   Int        @id @default(autoincrement())
+  tournament           Tournament @relation(fields: [tournamentDuosmiumId], references: [resultDuosmiumId], onDelete: Cascade)
+  tournamentDuosmiumId String
+  event                Event      @relation(fields: [eventName], references: [name], onDelete: Restrict)
+  eventName            String
+  placings             Placing[]
+  raws                 Raw[]
+  trial                Boolean    @default(false)
+  trialed              Boolean    @default(false)
+  lowScoreWins         Boolean    @default(false)
+  highScoreWins        Boolean    @default(true)
+  histoData            HistoData?
+  medals               Int?
+  maximumPlace         Int
 
-  @@unique([tournamentId, eventId])
+  @@unique([tournamentDuosmiumId, eventName])
+  @@index([tournamentDuosmiumId(sort: Asc), eventName(sort: Asc)])
   @@schema("public")
 }
 
 model Track {
-  id           Int         @id @default(autoincrement())
-  tournament   Tournament? @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
-  tournamentId Int?
-  teams        Team[]
-  placings     Placing[]
-  penalties    Penalty[]
-  name         String
-  medals       Int
-  trophies     Int
-  maximumPlace Int
-  sourceData   Json?       @db.JsonB
+  id                   Int         @id @default(autoincrement())
+  tournament           Tournament? @relation(fields: [tournamentDuosmiumId], references: [resultDuosmiumId], onDelete: Cascade)
+  tournamentDuosmiumId String?
+  teams                Team[]
+  placings             Placing[]
+  penalties            Penalty[]
+  name                 String
+  medals               Int?
+  trophies             Int?
+  maximumPlace         Int?
 
-  @@unique([tournamentId, name])
+  @@unique([tournamentDuosmiumId, name])
+  @@index([tournamentDuosmiumId(sort: Asc), name(sort: Asc)])
   @@schema("public")
 }
 
 model Placing {
   id                               Int             @id @default(autoincrement())
-  tournament                       Tournament      @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
-  tournamentId                     Int
-  tournamentEvent                  TournamentEvent @relation(fields: [tournamentEventId], references: [id], onDelete: Cascade)
-  tournamentEventId                Int
-  team                             Team            @relation(fields: [teamId], references: [id], onDelete: Cascade)
-  teamId                           Int
+  tournament                       Tournament      @relation(fields: [tournamentDuosmiumId], references: [resultDuosmiumId], onDelete: Cascade)
+  tournamentDuosmiumId             String
+  tournamentEvent                  TournamentEvent @relation(fields: [tournamentDuosmiumId, eventName], references: [tournamentDuosmiumId, eventName], onDelete: Cascade)
+  eventName                        String
+  team                             Team            @relation(fields: [tournamentDuosmiumId, teamNumber], references: [tournamentDuosmiumId, number], onDelete: Cascade)
+  teamNumber                       Int
   participated                     Boolean         @default(true)
   disqualified                     Boolean         @default(false)
   exempt                           Boolean         @default(false)
@@ -178,85 +185,90 @@ model Placing {
   pointsLimitedByMaximumPlace      Boolean         @default(false)
   trackExhibitionPlacingsBehind    Int?
   exhibitionPlacingsBehind         Int             @default(0)
-  track                            Track?          @relation(fields: [trackId], references: [id], onDelete: SetNull)
-  trackId                          Int?
-  sourceData                       Json?           @db.JsonB
+  track                            Track?          @relation(fields: [tournamentDuosmiumId, trackName], references: [tournamentDuosmiumId, name], onDelete: SetNull)
+  trackName                        String?
 
-  @@unique([tournamentEventId, teamId])
+  @@unique([tournamentDuosmiumId, eventName, teamNumber])
+  @@index([tournamentDuosmiumId(sort: Asc), eventName(sort: Asc), teamNumber(sort: Asc)])
   @@schema("public")
 }
 
 model Penalty {
-  id           Int        @id @default(autoincrement())
-  tournament   Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
-  tournamentId Int
-  team         Team       @relation(fields: [teamId], references: [id], onDelete: Cascade)
-  teamId       Int
-  points       Int
-  track        Track?     @relation(fields: [trackId], references: [id], onDelete: SetNull)
-  trackId      Int?
-  sourceData   Json?      @db.JsonB
+  id                   Int        @id @default(autoincrement())
+  tournament           Tournament @relation(fields: [tournamentDuosmiumId], references: [resultDuosmiumId], onDelete: Cascade)
+  tournamentDuosmiumId String
+  team                 Team       @relation(fields: [tournamentDuosmiumId, teamNumber], references: [tournamentDuosmiumId, number], onDelete: Cascade)
+  teamNumber           Int
+  points               Int
+  track                Track?     @relation(fields: [tournamentDuosmiumId, trackName], references: [tournamentDuosmiumId, name], onDelete: SetNull)
+  trackName            String?
 
-  @@unique([tournamentId, teamId])
+  @@unique([tournamentDuosmiumId, teamNumber])
+  @@index([tournamentDuosmiumId(sort: Asc), teamNumber(sort: Asc)])
   @@schema("public")
 }
 
 model Raw {
-  id                Int             @id @default(autoincrement())
-  tournamentEvent   TournamentEvent @relation(fields: [tournamentEventId], references: [id], onDelete: Cascade)
-  tournamentEventId Int
-  lowScoreWins      Boolean         @default(false)
-  score             Float
-  tier              Int             @default(1)
-  tiered            Boolean         @default(false)
-  tiebreakerRank    Int             @default(1)
-  lostTieBreaker    Boolean         @default(false)
-  placing           Placing         @relation(fields: [placingId], references: [id], onDelete: Cascade)
-  placingId         Int             @unique
-  team              Team            @relation(fields: [teamId], references: [id], onDelete: Cascade)
-  teamId            Int
-  sourceData        Json?           @db.JsonB
+  id                   Int             @id @default(autoincrement())
+  tournamentDuosmiumId String
+  tournamentEvent      TournamentEvent @relation(fields: [tournamentDuosmiumId, eventName], references: [tournamentDuosmiumId, eventName], onDelete: Cascade)
+  eventName            String
+  lowScoreWins         Boolean         @default(false)
+  score                Float
+  tier                 Int             @default(1)
+  tiered               Boolean         @default(false)
+  tiebreakerRank       Int             @default(1)
+  lostTieBreaker       Boolean         @default(false)
+  placing              Placing         @relation(fields: [tournamentDuosmiumId, eventName, teamNumber], references: [tournamentDuosmiumId, eventName, teamNumber], onDelete: Cascade)
+  team                 Team            @relation(fields: [tournamentDuosmiumId, teamNumber], references: [tournamentDuosmiumId, number], onDelete: Cascade)
+  teamNumber           Int
 
+  @@unique([tournamentDuosmiumId, eventName, teamNumber])
+  @@index([tournamentDuosmiumId(sort: Asc), eventName(sort: Asc), teamNumber(sort: Asc)])
   @@schema("public")
 }
 
 model HistoData {
-  id                Int             @id @default(autoincrement())
-  parent            Histogram       @relation(fields: [parentId], references: [id], onDelete: Cascade)
-  parentId          Int
-  tournamentEvent   TournamentEvent @relation(fields: [tournamentEventId], references: [id], onDelete: Cascade)
-  tournamentEventId Int             @unique
-  start             Float
-  width             Float
-  counts            Float[]
-  info              Json?           @db.JsonB
+  id                  Int             @id @default(autoincrement())
+  parent              Histogram       @relation(fields: [histogramDuosmiumId], references: [resultDuosmiumId], onDelete: Cascade)
+  histogramDuosmiumId String
+  tournamentEvent     TournamentEvent @relation(fields: [histogramDuosmiumId, eventName], references: [tournamentDuosmiumId, eventName], onDelete: Cascade)
+  eventName           String
+  start               Float
+  width               Float
+  counts              Float[]
+  info                Json?           @db.JsonB
 
+  @@unique([histogramDuosmiumId, eventName])
+  @@index([histogramDuosmiumId(sort: Asc), eventName(sort: Asc)])
   @@schema("public")
 }
 
 model Histogram {
-  id           Int         @id @default(autoincrement())
-  tournament   Tournament  @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
-  type         String
-  url          String?
-  data         HistoData[]
-  tournamentId Int         @unique
-  sourceData   Json?       @db.JsonB
+  id               Int         @id @default(autoincrement())
+  result           Result      @relation(fields: [resultDuosmiumId], references: [duosmiumId], onDelete: Cascade)
+  type             String
+  url              String?
+  data             HistoData[]
+  resultDuosmiumId String      @unique
 
+  @@index([resultDuosmiumId(sort: Asc)])
   @@schema("public")
 }
 
 model Location {
   id          Int          @id @default(autoincrement())
   name        String
-  city        String
+  city        String       @default("")
   state       String
+  country     String       @default("United States")
   latitude    Float?
   longitude   Float?
   tournaments Tournament[]
   Team        Team[]
 
-  @@unique([name, city, state])
+  @@unique([name, city, state, country])
+  @@index([name(sort: Asc), city(sort: Asc), state(sort: Asc), country(sort: Asc)])
   @@schema("public")
 }
 

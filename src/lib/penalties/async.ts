@@ -3,38 +3,36 @@
 
 // @ts-ignore
 import { Penalty } from 'sciolyff/interpreter';
-import { getTeam } from '../teams/async';
 import { prisma } from '../global/prisma';
-import { getTrack } from '../tracks/async';
 
-export async function getPenalty(tournamentID: number, teamID: number) {
+export async function getPenalty(duosmiumID: string, teamNumber: number) {
 	return await prisma.penalty.findUniqueOrThrow({
 		where: {
-			tournamentId_teamId: {
-				tournamentId: tournamentID,
-				teamId: teamID
+			tournamentDuosmiumId_teamNumber: {
+				tournamentDuosmiumId: duosmiumID,
+				teamNumber: teamNumber
 			}
 		}
 	});
 }
 
-export async function penaltyExists(tournamentID: number, teamID: number) {
+export async function penaltyExists(duosmiumID: string, teamNumber: number) {
 	return (
 		(await prisma.penalty.count({
 			where: {
-				tournamentId: tournamentID,
-				teamId: teamID
+				tournamentDuosmiumId: duosmiumID,
+				teamNumber: teamNumber
 			}
 		})) > 0
 	);
 }
 
-export async function deletePenalty(tournamentID: number, teamID: number) {
+export async function deletePenalty(duosmiumID: string, teamNumber: number) {
 	return await prisma.penalty.delete({
 		where: {
-			tournamentId_teamId: {
-				tournamentId: tournamentID,
-				teamId: teamID
+			tournamentDuosmiumId_teamNumber: {
+				tournamentDuosmiumId: duosmiumID,
+				teamNumber: teamNumber
 			}
 		}
 	});
@@ -47,11 +45,11 @@ export async function deleteAllPenalties() {
 export async function addPenalty(penaltyData: object) {
 	return await prisma.penalty.upsert({
 		where: {
-			tournamentId_teamId: {
+			tournamentDuosmiumId_teamNumber: {
 				// @ts-ignore
-				tournamentId: penaltyData.tournament.connect.id,
+				tournamentDuosmiumId: penaltyData.tournamentDuosmiumId,
 				// @ts-ignore
-				teamId: penaltyData.team.connect.id
+				teamNumber: penaltyData.teamNumber
 			}
 		},
 		// @ts-ignore
@@ -62,25 +60,27 @@ export async function addPenalty(penaltyData: object) {
 
 export async function createPenaltyDataInput(
 	penalty: Penalty,
-	tournamentID: number,
+	duosmiumID: string,
 ) {
 	const output = {
-		tournament: {
-			connect: {
-				id: tournamentID
-			}
-		},
 		team: {
 			connect: {
-				id: (await getTeam(tournamentID, penalty.team?.number))['id']
+				tournamentDuosmiumId_number: {
+					tournamentDuosmiumId: duosmiumID,
+					number: penalty.team.number
+				}
 			}
-		}
+		},
+		points: penalty.points
 	};
 	if (penalty.team?.track) {
 		// @ts-ignore
 		output['track'] = {
 			connect: {
-				id: (await getTrack(tournamentID, penalty.team.track.name))['id']
+				tournamentDuosmiumId_name: {
+					tournamentDuosmiumId: duosmiumID,
+					name: penalty.track.name.toString()
+				}
 			}
 		};
 	}

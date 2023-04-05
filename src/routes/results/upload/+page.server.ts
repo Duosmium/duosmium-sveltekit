@@ -6,16 +6,18 @@ import { deleteAllLocations } from '../../../lib/locations/async';
 
 export const actions = {
 	default: async ({ request }) => {
-		await deleteAllResults();
-		await deleteAllLocations();
-		await deleteAllEvents();
+		// await deleteAllResults();
+		// await deleteAllLocations();
+		// await deleteAllEvents();
 		const data = await request.formData();
 		const allFiles = data.getAll('yaml');
-		allFiles.forEach((file) => {
+		for (const file of allFiles) {
 			if (file === null || typeof file === 'string') {
 				throw new Error('Uploaded value is not a file!');
 			}
-			addResultFromYAMLFile(file);
-		});
+			// TODO: look into https://stackoverflow.com/questions/9539886/limiting-asynchronous-calls-in-node-js
+			// documentation: https://caolan.github.io/async/v3/
+			await addResultFromYAMLFile(file);
+		}
 	}
 } satisfies Actions;

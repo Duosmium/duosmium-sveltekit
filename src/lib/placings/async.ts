@@ -3,40 +3,39 @@
 
 import { Placing } from "sciolyff/interpreter";
 import { prisma } from "$lib/global/prisma";
-import { getEvent } from "../events/async";
-import { createTournamentEventDataInput, getTournamentEvent } from "../tournamentevents/async";
-import { getTeam } from "../teams/async";
-import { getTrack } from "../tracks/async";
-import { createTournamentDataInput } from "../tournaments/async";
+import { createRawDataInput } from "../raws/async";
 
-export async function getPlacing(eventID: number, teamID: number) {
+export async function getPlacing(duosmiumID: string, eventName: string, teamNumber: number) {
 	return await prisma.placing.findUniqueOrThrow({
 		where: {
-			eventId_teamId: {
-				eventId: eventID,
-				teamId: teamID
+			tournamentDuosmiumId_eventName_teamNumber: {
+				tournamentDuosmiumId: duosmiumID,
+				eventName: eventName,
+				teamNumber: teamNumber
 			}
 		}
 	});
 }
 
-export async function tournamentExists(eventID: number, teamID: number) {
+export async function tournamentExists(duosmiumID: string, eventName: string, teamNumber: number) {
 	return (
 		(await prisma.placing.count({
 			where: {
-				eventId: eventID,
-				teamId: teamID
+				tournamentDuosmiumId: duosmiumID,
+				eventName: eventName,
+				teamNumber: teamNumber
 			}
 		})) > 0
 	);
 }
 
-export async function deletePlacing(eventID: number, teamID: number) {
+export async function deletePlacing(duosmiumID: string, eventName: string, teamNumber: number) {
 	return await prisma.placing.delete({
 		where: {
-			eventId_teamId: {
-				eventId: eventID,
-				teamId: teamID
+			tournamentDuosmiumId_eventName_teamNumber: {
+				tournamentDuosmiumId: duosmiumID,
+				eventName: eventName,
+				teamNumber: teamNumber
 			}
 		}
 	});
@@ -47,17 +46,18 @@ export async function deleteAllPlacings() {
 }
 
 export async function addPlacing(placingData: object) {
-	// @ts-ignore
-	const tournamentEventID = placingData.event.connect.id;
-	// @ts-ignore
-	const teamID = placingData.team.connect.id;
 	return await prisma.placing.upsert({
 		where: {
-			eventId_teamId: {
-				eventId: tournamentEventID,
-				teamId: teamID
+			tournamentDuosmiumId_eventName_teamNumber: {
+				// @ts-ignore
+				tournamentDuosmiumId: placingData.tournamentDuosmiumId,
+				// @ts-ignore
+				eventName: placingData.eventName,
+				// @ts-ignore
+				teamNumber: placingData.teamNumber
 			}
 		},
+		// @ts-ignore
 		create: placingData,
 		update: placingData
 	});
@@ -65,27 +65,24 @@ export async function addPlacing(placingData: object) {
 
 export async function createPlacingDataInput(
 	placing: Placing,
-	tournamentID: number
+	duosmiumID: string
 ) {
 	// @ts-ignore
-	const eventID = (await getEvent(placing.event.name))['id'];
-	const tournamentEventID = (await getTournamentEvent(tournamentID, eventID))['id'];
-	// @ts-ignore
-	const teamID = (await getTeam(tournamentID, placing.team?.number))['id'];
 	const output = {
-		tournament: {
+		tournamentEvent: {
 			connect: {
-				id: tournamentID
-			}
-		},
-		event: {
-			connect: {
-				id: tournamentEventID
+				tournamentDuosmiumId_eventName: {
+					tournamentDuosmiumId: duosmiumID,
+					eventName: placing.event.name
+				}
 			}
 		},
 		team: {
 			connect: {
-				id: teamID
+				tournamentDuosmiumId_number: {
+					tournamentDuosmiumId: duosmiumID,
+					number: placing.team.number
+				}
 			}
 		},
 		participated: placing.participated,
@@ -119,9 +116,27 @@ export async function createPlacingDataInput(
 		// @ts-ignore
 		output['track'] = {
 			connect: {
-				id: (await getTrack(tournamentID, placing.team.track.name))['id']
+				tournamentDuosmiumId_name: {
+					tournamentDuosmiumId: duosmiumID,
+					name: placing.team.track.name
+				}
 			}
 		};
+	}
+	if (placing.raw !== undefined) {
+		// @ts-ignore
+		output['raw'] = {
+			connectOrCreate: {
+				create: await createRawDataInput(placing, duosmiumID),
+				where: {
+					tournamentDuosmiumId_eventName_teamNumber: {
+						tournamentDuosmiumId: duosmiumID,
+						eventName: placing.event.name,
+						teamNumber: placing.team.number
+					}
+				}
+			}
+		}
 	}
 	return output;
 }
