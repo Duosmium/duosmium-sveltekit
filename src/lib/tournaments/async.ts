@@ -143,7 +143,7 @@ export async function createTournamentDataInput(tournament: Tournament, duosmium
 			}
 		},
 		teams: {
-			connectOrCreate: teamData[0]
+			connectOrCreate: teamData
 		},
 		tournamentEvents: {
 			connectOrCreate: tournamentEventData
