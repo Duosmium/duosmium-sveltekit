@@ -2,7 +2,7 @@
 // noinspection ES6RedundantAwait
 
 // @ts-ignore
-import { Placing, Raw } from 'sciolyff/interpreter';
+import { Placing } from 'sciolyff/interpreter';
 import { prisma } from '../global/prisma';
 
 export async function getRaw(duosmiumID: string, eventName: string, teamNumber: number) {
@@ -82,15 +82,6 @@ export async function createRawDataInput(placing: Placing, duosmiumID: string) {
 		tiered: raw.tiered,
 		tiebreakerRank: raw.tiebreakerRank,
 		lostTieBreaker: raw.lostTiebreaker,
-		placing: {
-			connect: {
-				tournamentDuosmiumId_eventName_teamNumber: {
-					tournamentDuosmiumId: duosmiumID,
-					eventName: placing.event.name,
-					teamNumber: placing.team.number
-				}
-			}
-		},
 		team: {
 			connect: {
 				tournamentDuosmiumId_number: {

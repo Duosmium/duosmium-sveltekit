@@ -99,12 +99,12 @@ export async function createTeamDataInput(
 			connectOrCreate: {
 				where: {
 					tournamentDuosmiumId_name: {
-						name: team.track.name,
+						name: team.track.name.toString(),
 						tournamentDuosmiumId: duosmiumID
 					}
 				},
 				create: {
-					name: team.track.name,
+					name: team.track.name.toString(),
 					tournament: {
 						connect: {
 							resultDuosmiumId: duosmiumID

@@ -118,7 +118,7 @@ export async function createPlacingDataInput(
 			connect: {
 				tournamentDuosmiumId_name: {
 					tournamentDuosmiumId: duosmiumID,
-					name: placing.team.track.name
+					name: placing.team.track.name.toString()
 				}
 			}
 		};
