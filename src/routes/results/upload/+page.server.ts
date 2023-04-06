@@ -1,5 +1,8 @@
 import type { Actions } from './$types';
 import { ResultsAddQueue } from "$lib/results/queue";
+// import { deleteAllLocations } from "../../../lib/locations/async";
+// import { deleteAllResults } from "../../../lib/results/async";
+// import { deleteAllEvents } from "../../../lib/events/async";
 
 export const actions = {
 	default: async ({ request }) => {
@@ -18,10 +21,6 @@ export const actions = {
 				throw new Error('Uploaded value is not a file!');
 			}
 			q.push(file);
-		}
-		while (q.started() && !q.idle()) {
-			console.log(`Processes running: ${q.running()}, queue length: ${q.length()}`);
-			await new Promise(r => setTimeout(r, 1000));
 		}
 	}
 } satisfies Actions;

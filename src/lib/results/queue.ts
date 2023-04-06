@@ -2,7 +2,7 @@ import type { QueueObject } from "async";
 import { queue } from "async";
 import { addResultFromYAMLFile } from "./async";
 
-const MAX_PROCESSES = 64;
+const MAX_PROCESSES = 16;
 
 export class ResultsAddQueue {
   private static instance: ResultsAddQueue | null = null;

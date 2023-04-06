@@ -149,7 +149,7 @@ export async function createTournamentDataInput(tournament: Tournament, duosmium
 			connectOrCreate: tournamentEventData
 		},
 		placings: {
-			connectOrCreate: placingData[0]
+			connectOrCreate: placingData
 		},
 		penalties: {
 			connectOrCreate: penaltyData

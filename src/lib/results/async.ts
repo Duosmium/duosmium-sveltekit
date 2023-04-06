@@ -6,9 +6,10 @@ import Interpreter from 'sciolyff/interpreter';
 import { generateFilename } from './helpers';
 import { load } from 'js-yaml';
 import { getInterpreter } from './interpreter';
-import { prisma } from "../global/prisma";
+import { keepTryingUntilItWorks, prisma } from "../global/prisma";
 import { createTournamentDataInput } from "../tournaments/async";
 import { createHistogramDataInput } from "../histograms/async";
+import { ResultsAddQueue } from "./queue";
 
 export async function getResult(duosmiumID: string) {
 	return await prisma.result.findUniqueOrThrow({
@@ -41,14 +42,20 @@ export async function deleteAllResults() {
 }
 
 export async function addResultFromYAMLFile(file: File, callback=function (name: string) {
-	console.log(`Result ${name} added!`);
+	const q = ResultsAddQueue.getInstance();
+	console.log(`Result ${name} added! There are ${q.running()} workers running. The queue length is ${q.length()}.`);
 }) {
 	const yaml = await file.text();
 	// @ts-ignore
 	const obj: object = load(yaml);
 	const interpreter: Interpreter = getInterpreter(obj);
-	await addResult(await createResultDataInput(interpreter));
-	callback(generateFilename(interpreter));
+	try {
+		await keepTryingUntilItWorks(addResult, await createResultDataInput(interpreter));
+		callback(generateFilename(interpreter));
+	} catch (e) {
+		console.log(`ERROR: could not add ${generateFilename(interpreter)}!`);
+		console.log(e);
+	}
 }
 
 export async function addResult(resultData: object) {
