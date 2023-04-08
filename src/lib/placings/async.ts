@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 // @ts-ignore
 
-import { Placing } from "sciolyff/interpreter";
-import { prisma } from "$lib/global/prisma";
+import { Placing } from 'sciolyff/interpreter';
+import { prisma } from '$lib/global/prisma';
 
 export async function getPlacing(duosmiumID: string, eventName: string, teamNumber: number) {
 	// noinspection ES6RedundantAwait
@@ -88,10 +88,7 @@ export async function addPlacing(placingData: object) {
 	});
 }
 
-export async function createPlacingDataInput(
-	placing: Placing,
-	duosmiumID: string
-) {
+export async function createPlacingDataInput(placing: Placing, duosmiumID: string) {
 	return {
 		event: {
 			connect: {
@@ -110,5 +107,5 @@ export async function createPlacingDataInput(
 			}
 		},
 		data: placing.rep
-	}
+	};
 }

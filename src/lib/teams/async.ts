@@ -2,8 +2,8 @@
 // noinspection ES6RedundantAwait
 
 // @ts-ignore
-import { Team } from "sciolyff/interpreter";
-import { prisma } from "../global/prisma";
+import { Team } from 'sciolyff/interpreter';
+import { prisma } from '../global/prisma';
 
 export async function getTeam(duosmiumID: string, number: number) {
 	return await prisma.team.findUniqueOrThrow({
@@ -75,9 +75,7 @@ export async function addTeam(teamData: object) {
 	});
 }
 
-export async function createTeamDataInput(
-	team: Team,
-) {
+export async function createTeamDataInput(team: Team) {
 	return {
 		number: team.number,
 		data: team.rep

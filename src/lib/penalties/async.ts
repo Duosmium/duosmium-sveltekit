@@ -74,10 +74,7 @@ export async function addPenalty(penaltyData: object) {
 	});
 }
 
-export async function createPenaltyDataInput(
-	penalty: Penalty,
-	duosmiumID: string
-) {
+export async function createPenaltyDataInput(penalty: Penalty, duosmiumID: string) {
 	return {
 		team: {
 			connect: {
@@ -88,5 +85,5 @@ export async function createPenaltyDataInput(
 			}
 		},
 		data: penalty.rep
-	}
+	};
 }

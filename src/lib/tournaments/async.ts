@@ -2,8 +2,8 @@
 // noinspection ES6RedundantAwait
 
 // @ts-ignore
-import { Tournament } from "sciolyff/interpreter";
-import { prisma } from "../global/prisma";
+import { Tournament } from 'sciolyff/interpreter';
+import { prisma } from '../global/prisma';
 
 export async function getTournament(duosmiumID: string) {
 	return await prisma.tournament.findUniqueOrThrow({

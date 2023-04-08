@@ -6,15 +6,15 @@ import Interpreter from 'sciolyff/interpreter';
 import { generateFilename } from './helpers';
 import { load } from 'js-yaml';
 import { getInterpreter } from './interpreter';
-import { keepTryingUntilItWorks, prisma } from "../global/prisma";
-import { createTournamentDataInput, getTournamentData } from "../tournaments/async";
-import { createHistogramDataInput, getHistogramData } from "../histograms/async";
-import { ResultsAddQueue } from "./queue";
-import { createTeamDataInput, getTeamData } from "../teams/async";
-import { createEventDataInput, getEventData } from "../events/async";
-import { createPlacingDataInput, getPlacingData } from "../placings/async";
-import { createPenaltyDataInput, getPenaltyData } from "../penalties/async";
-import { createTrackDataInput, getTrackData } from "../tracks/async";
+import { keepTryingUntilItWorks, prisma } from '../global/prisma';
+import { createTournamentDataInput, getTournamentData } from '../tournaments/async';
+import { createHistogramDataInput, getHistogramData } from '../histograms/async';
+import { ResultsAddQueue } from './queue';
+import { createTeamDataInput, getTeamData } from '../teams/async';
+import { createEventDataInput, getEventData } from '../events/async';
+import { createPlacingDataInput, getPlacingData } from '../placings/async';
+import { createPenaltyDataInput, getPenaltyData } from '../penalties/async';
+import { createTrackDataInput, getTrackData } from '../tracks/async';
 
 export async function getResult(duosmiumID: string) {
 	return await prisma.result.findUniqueOrThrow({
@@ -33,26 +33,33 @@ export async function getCompleteResult(duosmiumID: string) {
 	const penaltyData = await getPenaltyData(duosmiumID);
 	const histogramData = await getHistogramData(duosmiumID);
 	const output = {};
-	if (tournamentData !== null) { // @ts-ignore
-		output["Tournament"] = tournamentData;
+	if (tournamentData !== null) {
+		// @ts-ignore
+		output['Tournament'] = tournamentData;
 	}
-	if (eventData.length > 0) { // @ts-ignore
-		output["Events"] = eventData;
+	if (eventData.length > 0) {
+		// @ts-ignore
+		output['Events'] = eventData;
 	}
-	if (trackData.length > 0) { // @ts-ignore
-		output["Tracks"] = trackData;
+	if (trackData.length > 0) {
+		// @ts-ignore
+		output['Tracks'] = trackData;
 	}
-	if (teamData.length > 0) { // @ts-ignore
-		output["Teams"] = teamData;
+	if (teamData.length > 0) {
+		// @ts-ignore
+		output['Teams'] = teamData;
 	}
-	if (placingData.length > 0) { // @ts-ignore
-		output["Placings"] = placingData;
+	if (placingData.length > 0) {
+		// @ts-ignore
+		output['Placings'] = placingData;
 	}
-	if (penaltyData.length > 0) { // @ts-ignore
-		output["Penalties"] = penaltyData;
+	if (penaltyData.length > 0) {
+		// @ts-ignore
+		output['Penalties'] = penaltyData;
 	}
-	if (histogramData !== null) { // @ts-ignore
-		output["Histograms"] = histogramData;
+	if (histogramData !== null) {
+		// @ts-ignore
+		output['Histograms'] = histogramData;
 	}
 	return output;
 }
@@ -61,15 +68,15 @@ export async function getAllResults() {
 	return await prisma.result.findMany({
 		orderBy: [
 			{
-				duosmiumId: 'asc',
+				duosmiumId: 'asc'
 			}
-		],
+		]
 	});
 }
 
 export async function getAllCompleteResults() {
 	const output = {};
-	for (const result of (await getAllResults())) {
+	for (const result of await getAllResults()) {
 		const duosmiumID = result.duosmiumId;
 		// @ts-ignore
 		output[duosmiumID] = await getCompleteResult(duosmiumID);
@@ -99,10 +106,15 @@ export async function deleteAllResults() {
 	return await prisma.result.deleteMany({});
 }
 
-export async function addResultFromYAMLFile(file: File, callback=function (name: string) {
-	const q = ResultsAddQueue.getInstance();
-	console.log(`Result ${name} added! There are ${q.running()} workers running. The queue length is ${q.length()}.`);
-}) {
+export async function addResultFromYAMLFile(
+	file: File,
+	callback = function (name: string) {
+		const q = ResultsAddQueue.getInstance();
+		console.log(
+			`Result ${name} added! There are ${q.running()} workers running. The queue length is ${q.length()}.`
+		);
+	}
+) {
 	const yaml = await file.text();
 	// @ts-ignore
 	const obj: object = load(yaml);
@@ -123,7 +135,7 @@ export async function addResult(resultData: object) {
 	return await prisma.result.upsert({
 		where: {
 			// @ts-ignore
-			duosmiumId: resultData["duosmiumId"]
+			duosmiumId: resultData['duosmiumId']
 		},
 		// @ts-ignore
 		create: resultData,
@@ -146,7 +158,7 @@ export async function createResultDataInput(interpreter: Interpreter) {
 					name: event.name
 				}
 			}
-		})
+		});
 	}
 	const trackData = [];
 	for (const track of tournament.tracks) {
@@ -159,7 +171,7 @@ export async function createResultDataInput(interpreter: Interpreter) {
 					name: track.name.toString()
 				}
 			}
-		})
+		});
 	}
 	const teamData = [];
 	for (const team of tournament.teams) {
@@ -229,14 +241,14 @@ export async function createResultDataInput(interpreter: Interpreter) {
 	};
 	if (interpreter.histograms) {
 		// @ts-ignore
-		output["histogram"] = {
+		output['histogram'] = {
 			connectOrCreate: {
 				create: await createHistogramDataInput(interpreter.histograms),
 				where: {
 					resultDuosmiumId: duosmiumID
 				}
 			}
-		}
+		};
 	}
 	return output;
 }

@@ -2,8 +2,8 @@
 // noinspection ES6RedundantAwait
 
 // @ts-ignore
-import { Event } from "sciolyff/interpreter";
-import { prisma } from "../global/prisma";
+import { Event } from 'sciolyff/interpreter';
+import { prisma } from '../global/prisma';
 
 export async function getEvent(duosmiumID: string, eventName: string) {
 	return await prisma.event.findUniqueOrThrow({

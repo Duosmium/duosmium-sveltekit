@@ -44,7 +44,7 @@ export async function POST(request: Request) {
 		obj = JSON.parse(data);
 	}
 	const resultData = await addResult(obj);
-	return new Response(`Result ${resultData["duosmiumId"]} created`, { status: 201 });
+	return new Response(`Result ${resultData['duosmiumId']} created`, { status: 201 });
 }
 
 export async function PUT() {
