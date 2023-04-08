@@ -4,7 +4,6 @@
 // @ts-ignore
 import { Histogram } from 'sciolyff/interpreter';
 import { prisma } from '../global/prisma';
-import { createHistoDataDataInput } from "../histodata/async";
 
 export async function getHistogram(duosmiumID: string) {
 	return await prisma.histogram.findUniqueOrThrow({
@@ -12,6 +11,19 @@ export async function getHistogram(duosmiumID: string) {
 			resultDuosmiumId: duosmiumID
 		}
 	});
+}
+
+export async function getHistogramData(duosmiumID: string) {
+	const rawData = await prisma.histogram.findUnique({
+		where: {
+			resultDuosmiumId: duosmiumID
+		}
+	});
+	if (rawData === null) {
+		return null;
+	} else {
+		return rawData.data;
+	}
 }
 
 export async function histogramExists(duosmiumID: string) {
@@ -48,25 +60,10 @@ export async function addHistogram(histogramData: object) {
 	});
 }
 
-export async function createHistogramDataInput(histogram: Histogram, duosmiumID: string) {
-	const histoDataObjects = [];
-	for (const data of histogram.data) {
-		const thisHistoDataObject = await createHistoDataDataInput(data, duosmiumID);
-		histoDataObjects.push({
-			create: thisHistoDataObject,
-			where: {
-				histogramDuosmiumId_eventName: {
-					histogramDuosmiumId: duosmiumID,
-					eventName: data.event.name
-				}
-			}
-		})
-	}
+export async function createHistogramDataInput(histogram: Histogram) {
 	return {
-		type: histogram.type,
-		url: histogram.url,
 		data: {
-			connectOrCreate: histoDataObjects
+			connectOrCreate: histogram.rep
 		}
 	};
 }

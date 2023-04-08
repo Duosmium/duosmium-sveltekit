@@ -1,5 +1,5 @@
 import { load } from 'js-yaml';
-import { getAllResults, addResult, deleteAllResults } from '$lib/results/async';
+import { getAllCompleteResults, addResult, deleteAllResults } from '$lib/results/async';
 import { exportYAMLOrJSON } from '$lib/results/helpers';
 import { error } from '@sveltejs/kit';
 
@@ -9,7 +9,7 @@ export async function DELETE() {
 }
 
 export async function GET(request: Request) {
-	const allResults = await getAllResults();
+	const allResults = await getAllCompleteResults();
 	return exportYAMLOrJSON(new URL(request.url), allResults, 'results');
 }
 
@@ -43,8 +43,8 @@ export async function POST(request: Request) {
 	} catch (e) {
 		obj = JSON.parse(data);
 	}
-	const fileName = await addResult(obj);
-	return new Response(`Result ${fileName} created`, { status: 201 });
+	const resultData = await addResult(obj);
+	return new Response(`Result ${resultData["duosmiumId"]} created`, { status: 201 });
 }
 
 export async function PUT() {

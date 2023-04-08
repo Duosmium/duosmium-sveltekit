@@ -2,25 +2,41 @@
 // noinspection ES6RedundantAwait
 
 // @ts-ignore
-import { Team } from 'sciolyff/interpreter';
-import { prisma } from '../global/prisma';
+import { Team } from "sciolyff/interpreter";
+import { prisma } from "../global/prisma";
 
 export async function getTeam(duosmiumID: string, number: number) {
 	return await prisma.team.findUniqueOrThrow({
 		where: {
-			tournamentDuosmiumId_number: {
-				tournamentDuosmiumId: duosmiumID,
+			resultDuosmiumId_number: {
+				resultDuosmiumId: duosmiumID,
 				number: number
 			}
 		}
 	});
 }
 
+export async function getTeamData(duosmiumID: string) {
+	const rawData = await prisma.team.findMany({
+		where: {
+			resultDuosmiumId: duosmiumID
+		},
+		orderBy: {
+			number: 'asc'
+		}
+	});
+	const output = [];
+	for (const rawItem of rawData) {
+		output.push(rawItem.data);
+	}
+	return output;
+}
+
 export async function teamExists(duosmiumID: string, number: number) {
 	return (
 		(await prisma.team.count({
 			where: {
-				tournamentDuosmiumId: duosmiumID,
+				resultDuosmiumId: duosmiumID,
 				number: number
 			}
 		})) > 0
@@ -30,8 +46,8 @@ export async function teamExists(duosmiumID: string, number: number) {
 export async function deleteTeam(duosmiumID: string, number: number) {
 	return await prisma.team.delete({
 		where: {
-			tournamentDuosmiumId_number: {
-				tournamentDuosmiumId: duosmiumID,
+			resultDuosmiumId_number: {
+				resultDuosmiumId: duosmiumID,
 				number: number
 			}
 		}
@@ -45,9 +61,9 @@ export async function deleteAllTeams() {
 export async function addTeam(teamData: object) {
 	return await prisma.team.upsert({
 		where: {
-			tournamentDuosmiumId_number: {
+			resultDuosmiumId_number: {
 				// @ts-ignore
-				tournamentDuosmiumId: teamData.tournamentDuosmiumId,
+				resultDuosmiumId: teamData.resultDuosmiumId,
 				// @ts-ignore
 				number: teamData.number
 			}
@@ -61,58 +77,9 @@ export async function addTeam(teamData: object) {
 
 export async function createTeamDataInput(
 	team: Team,
-	duosmiumID: string
 ) {
-	const locationData = {
-		name: team.school,
-		city: team.city === undefined ? "" : team.city,
-		state: /^[ns]?[A-Z]{2}$/.test(team.state) ? team.state : "",
-		country: /^[ns]?[A-Z]{2}$/.test(team.state) ? "United States" : team.state,
-	};
-	const output = {
+	return {
 		number: team.number,
-		location: {
-			connectOrCreate: {
-				create: locationData,
-				where: {
-					name_city_state_country: locationData
-				}
-			}
-		},
-		rank: team.rank,
-		trackRank: team.trackRank,
-		points: team.points,
-		trackPoints: team.trackPoints,
-		earnedBid: team.earnedBid,
-		// worstPlacingsToBeDropped can be calculated via queries
-		trialEventPoints: team.trialEventPoints,
-		trackTrialEventPoints: team.trackTrialEventPoints,
-		medalCounts: team.medalCounts,
-		trialEventMedalCounts: team.trialEventMedalCounts,
-		trackMedalCounts: team.trackMedalCounts,
-		trackTrialEventMedalCounts: team.trackTrialEventMedalCounts
+		data: team.rep
 	};
-	if (team.track) {
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
-		output['track'] = {
-			connectOrCreate: {
-				where: {
-					tournamentDuosmiumId_name: {
-						name: team.track.name.toString(),
-						tournamentDuosmiumId: duosmiumID
-					}
-				},
-				create: {
-					name: team.track.name.toString(),
-					tournament: {
-						connect: {
-							resultDuosmiumId: duosmiumID
-						}
-					}
-				}
-			}
-		};
-	}
-	return output;
 }
