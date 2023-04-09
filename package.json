@@ -23,7 +23,7 @@
 		"js-yaml": "^4.1.0",
 		"mongodb": "^5.0.1",
 		"prisma": "^4.11.0",
-		"sciolyff": "^0.11.0",
+		"sciolyff": "^0.12.0",
 		"strftime": "^0.10.1"
 	},
 	"devDependencies": {
