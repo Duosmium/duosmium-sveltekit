@@ -1,6 +1,5 @@
 import { dump } from 'js-yaml';
 import type { Interpreter, Team, Tournament } from 'sciolyff/dist/src/interpreter/types';
-import strftime from 'strftime';
 import { JSON_OPTIONS, STATES_BY_POSTAL_CODE, YAML_OPTIONS } from '$lib/global/helpers';
 
 export function objectToYAML(obj: object) {
@@ -12,7 +11,12 @@ export function objectToJSON(obj: object) {
 }
 
 export function exportYAMLOrJSON(url: URL, obj: object, yamlName: string) {
-	if (url.searchParams.get('format') === 'yaml') {
+	if (
+		typeof url.searchParams.get('format') === 'string' &&
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
+		url.searchParams.get('format').toLowerCase() === 'yaml'
+	) {
 		const myYAMLOptions = YAML_OPTIONS;
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore
@@ -167,11 +171,28 @@ export const ordinalize = (i: number) => {
 };
 
 export function dateString(i: Interpreter): string {
-	const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-	const monthsOfYear = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+	const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+	const monthsOfYear = [
+		'January',
+		'February',
+		'March',
+		'April',
+		'May',
+		'June',
+		'July',
+		'August',
+		'September',
+		'October',
+		'November',
+		'December'
+	];
 	if (i.tournament.startDate && i.tournament.endDate) {
-		let s = `${daysOfWeek[i.tournament.startDate.getUTCDay()]}, ${monthsOfYear[i.tournament.startDate.getUTCMonth()]} ${i.tournament.startDate.getUTCDate()}, ${i.tournament.startDate.getUTCFullYear()}`;
-		const e = `${daysOfWeek[i.tournament.endDate.getUTCDay()]}, ${monthsOfYear[i.tournament.endDate.getUTCMonth()]} ${i.tournament.endDate.getUTCDate()}, ${i.tournament.endDate.getUTCFullYear()}`;
+		let s = `${daysOfWeek[i.tournament.startDate.getUTCDay()]}, ${
+			monthsOfYear[i.tournament.startDate.getUTCMonth()]
+		} ${i.tournament.startDate.getUTCDate()}, ${i.tournament.startDate.getUTCFullYear()}`;
+		const e = `${daysOfWeek[i.tournament.endDate.getUTCDay()]}, ${
+			monthsOfYear[i.tournament.endDate.getUTCMonth()]
+		} ${i.tournament.endDate.getUTCDate()}, ${i.tournament.endDate.getUTCFullYear()}`;
 		if (s != e) {
 			s += ' - ' + e;
 		}

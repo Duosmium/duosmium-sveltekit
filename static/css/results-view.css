@@ -1,130 +1,127 @@
 .results-wrapper {
-    text-align: center;
-    font-family: 'Roboto', sans-serif;
-    overflow: auto;
-    overflow-y: scroll;
-    height: 100vh;
-    margin: -8px;
-    box-sizing: inherit;
+	text-align: center;
+	font-family: 'Roboto', sans-serif;
+	overflow: auto;
+	overflow-y: scroll;
+	height: 100vh;
+	margin: -8px;
+	box-sizing: inherit;
 }
 
 .results-header-container {
-    min-width: 80.5rem;
-    height: calc(15rem + 3ex);
-    top: 0;
-    z-index: 1;
-    isolation: isolate;
-    position: sticky;
-    box-shadow: 0 0 4px #00000024, 0 3px 4px #0000001f, 0 1px 5px #0003;
-    background-color: #1f1b35;
+	min-width: 80.5rem;
+	height: calc(15rem + 3ex);
+	top: 0;
+	z-index: 1;
+	isolation: isolate;
+	position: sticky;
+	box-shadow: 0 0 4px #00000024, 0 3px 4px #0000001f, 0 1px 5px #0003;
+	background-color: #1f1b35;
 }
 
 .results-header {
-    width: 80rem;
-    color: white;
-    padding: 1rem 0 2.25rem;
-    user-select: none;
-    margin: 0 auto;
+	width: 80rem;
+	color: white;
+	padding: 1rem 0 2.25rem;
+	user-select: none;
+	margin: 0 auto;
 }
 
 .info {
-    border-top: white 2px solid;
-    border-bottom: white 1px solid;
-    width: 25rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding: 1rem 0.5rem;
-    min-height: 7rem;
-    margin-bottom: 1rem;
-    margin-left: 1.5rem;
+	border-top: white 2px solid;
+	border-bottom: white 1px solid;
+	width: 25rem;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	padding: 1rem 0.5rem;
+	min-height: 7rem;
+	margin-bottom: 1rem;
+	margin-left: 1.5rem;
+	margin-top: 1.5rem;
 }
 
 .info h1 {
-    margin-top: 0;
-    margin-bottom: 0.5rem;
-    font-size: 1.25rem;
-    font-weight: 500;
+	margin-top: 0;
+	margin-bottom: 0.5rem;
+	font-size: 1.25rem;
+	font-weight: 500;
 }
 
 .info p {
-    font-size: 0.875rem;
-    margin: 0;
+	font-size: 0.875rem;
+	margin: 0;
 }
 
 .date {
 }
 
 .location {
-    white-space: nowrap;
+	white-space: nowrap;
 }
 
 .actions {
-    padding-left: 0.75rem;
-    text-align: start;
-    margin-left: 9rem;
+	text-align: start;
+	margin-left: 9rem;
 }
 
 .actions svg {
-    vertical-align: middle;
-    overflow: hidden;
-    fill: white;
-    cursor: pointer;
+	vertical-align: middle;
+	overflow: hidden;
+	fill: white;
+	cursor: pointer;
 }
 
-.actions a, .actions button {
-    padding: 0;
-    background: none;
-    display: inline-block;
-    margin-right: 1rem;
-    border: none;
-    width: 1.5rem;
-    height: 1.5rem;
+.actions a,
+.actions button {
+	padding: 0;
+	background: none;
+	display: inline-block;
+	margin-right: 1rem;
+	border: none;
+	width: 1.5rem;
+	height: 1.5rem;
 }
 
 .back-button {
-
 }
 
-.save-button {
-
+.tune-button {
 }
 
 .print-button {
-
 }
 
 .share-button {
-
 }
 
 .results-table {
-    border-collapse: collapse;
-    table-layout: fixed;
-    width: 80rem;
-    margin: -3ex auto 0.75rem;
+	border-collapse: collapse;
+	table-layout: fixed;
+	width: 80rem;
+	margin: -3ex auto 0.75rem;
 }
 
 .results-table small {
-    font-size: 0.75rem;
+	font-size: 0.75rem;
 }
 
 .result-table-header {
-    top: 15rem;
-    position: sticky;
-    z-index: 1;
-    color: white;
-    height: 1.75rem;
+	top: 15rem;
+	position: sticky;
+	z-index: 1;
+	color: white;
+	height: 1.75rem;
 }
 
 .number-header {
-    text-align: end;
-    width: 2rem;
+	text-align: end;
+	width: 2rem;
 }
 
 .team-header {
-    text-align: start;
-    width: 18rem;
+	text-align: start;
+	width: 18rem;
 }
 
 .event-points-header {
@@ -134,42 +131,42 @@
 }
 
 .rank-header div {
-    margin-right: 0.4rem;
-    text-align: end;
+	margin-right: 0.4rem;
+	text-align: end;
 }
 
 .team-points-header {
 }
 
 .hover {
-    background-color: #eee;
+	background-color: #eee;
 }
 
 .event-header {
-    text-align: start;
-    transform: rotate(-90deg);
-    white-space: nowrap;
-    padding-left: 0.75rem;
-    position: sticky;
+	text-align: start;
+	transform: rotate(-90deg);
+	white-space: nowrap;
+	padding-left: 0.75rem;
+	position: sticky;
 }
 
 .number-header,
 .team-number {
-    padding-right: 0.5rem;
-    text-align: end;
+	padding-right: 0.5rem;
+	text-align: end;
 }
 
 .team-number,
 .team-name {
-    cursor: pointer;
+	cursor: pointer;
 }
 
 .event-points-header,
 .event-points {
-    width: 0;
-    padding-top: 0;
-    padding-left: 0;
-    padding-right: 0;
+	width: 0;
+	padding-top: 0;
+	padding-left: 0;
+	padding-right: 0;
 }
 
 .number-header,
@@ -177,38 +174,38 @@
 .event-points-header,
 .rank-header,
 .team-points-header {
-    vertical-align: baseline;
+	vertical-align: baseline;
 }
 
 .rank-header,
 .team-points-header {
-    width: 4rem;
+	width: 4rem;
 }
 
 .result-table-body {
 }
 
 .team:hover {
-    background-color: #eeeeee;
+	background-color: #eeeeee;
 }
 
 .team {
-    text-align: center;
-    height: 2rem;
+	text-align: center;
+	height: 2rem;
 }
 
 .team-number {
 }
 
 .team-name {
-    text-align: start;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
+	text-align: start;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
 }
 
 .team-location {
-    margin: 0.375rem;
+	margin: 0.375rem;
 }
 
 .team-rank {
@@ -218,16 +215,42 @@
 }
 
 .team-placing {
-    padding: 0;
+	padding: 0;
 }
 
 .team-placing div {
-    width: 2rem;
-    height: 2rem;
-    margin: 0 auto;
-    line-height: 2rem;
+	width: 2rem;
+	height: 2rem;
+	margin: 0 auto;
+	line-height: 2rem;
 }
 
 .team-penalty {
-    color: #0000008a;
+	color: #0000008a;
+}
+
+.badge {
+	border-radius: 2px;
+	align-items: center;
+	display: inline-flex;
+	font-size: inherit;
+	font-weight: 500;
+	line-height: inherit;
+	padding-left: 0.5rem;
+	padding-right: 0.5rem;
+	text-align: center;
+	vertical-align: baseline;
+	white-space: nowrap;
+}
+
+.badge-trial {
+	background-color: #2196f3;
+}
+
+.badge-trialed {
+	background-color: #f44336;
+}
+
+a {
+	color: #15658c;
 }
