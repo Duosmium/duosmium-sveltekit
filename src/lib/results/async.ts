@@ -6,15 +6,15 @@ import Interpreter from 'sciolyff/interpreter';
 import { generateFilename } from './helpers';
 import { load } from 'js-yaml';
 import { getInterpreter } from './interpreter';
-import { keepTryingUntilItWorks, prisma } from '../global/prisma';
-import { createTournamentDataInput, getTournamentData } from '../tournaments/async';
-import { createHistogramDataInput, getHistogramData } from '../histograms/async';
+import { keepTryingUntilItWorks, prisma } from '$lib/global/prisma';
+import { createTournamentDataInput, getTournamentData } from '$lib/tournaments/async';
+import { createHistogramDataInput, getHistogramData } from '$lib/histograms/async';
 import { ResultsAddQueue } from './queue';
-import { createTeamDataInput, getTeamData } from '../teams/async';
-import { createEventDataInput, getEventData } from '../events/async';
-import { createPlacingDataInput, getPlacingData } from '../placings/async';
-import { createPenaltyDataInput, getPenaltyData } from '../penalties/async';
-import { createTrackDataInput, getTrackData } from '../tracks/async';
+import { createTeamDataInput, getTeamData } from '$lib/teams/async';
+import { createEventDataInput, getEventData } from '$lib/events/async';
+import { createPlacingDataInput, getPlacingData } from '$lib/placings/async';
+import { createPenaltyDataInput, getPenaltyData } from '$lib/penalties/async';
+import { createTrackDataInput, getTrackData } from '$lib/tracks/async';
 
 export async function getResult(duosmiumID: string) {
 	return await prisma.result.findUniqueOrThrow({

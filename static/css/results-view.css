@@ -236,11 +236,13 @@
 	font-size: inherit;
 	font-weight: 500;
 	line-height: inherit;
+	margin-left: 0.25rem;
 	padding-left: 0.5rem;
 	padding-right: 0.5rem;
 	text-align: center;
 	vertical-align: baseline;
 	white-space: nowrap;
+	color: white;
 }
 
 .badge-trial {
@@ -249,6 +251,18 @@
 
 .badge-trialed {
 	background-color: #f44336;
+}
+
+.badge-disqualified {
+	background-color: #9920f5;
+}
+
+.badge-exhibition {
+	background-color: #ffa229;
+}
+
+.badge-absent {
+	background-color: #8a8a8a;
 }
 
 a {

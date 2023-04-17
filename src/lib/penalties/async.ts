@@ -3,7 +3,7 @@
 
 // @ts-ignore
 import { Penalty } from 'sciolyff/interpreter';
-import { prisma } from '../global/prisma';
+import { prisma } from '$lib/global/prisma';
 
 export async function getPenalty(duosmiumID: string, teamNumber: number) {
 	return await prisma.penalty.findUniqueOrThrow({

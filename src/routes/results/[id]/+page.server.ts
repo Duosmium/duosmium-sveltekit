@@ -1,5 +1,5 @@
 import type { PageServerLoad } from './$types';
-import { getCompleteResult, getResult } from '../../../lib/results/async';
+import { getCompleteResult, getResult } from '$lib/lib/results/async';
 
 export const load = (async ({ params }) => {
 	const fullData = await getCompleteResult(params.id);

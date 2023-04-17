@@ -3,7 +3,7 @@
 
 // @ts-ignore
 import { Event } from 'sciolyff/interpreter';
-import { prisma } from '../global/prisma';
+import { prisma } from '$lib/global/prisma';
 
 export async function getEvent(duosmiumID: string, eventName: string) {
 	return await prisma.event.findUniqueOrThrow({

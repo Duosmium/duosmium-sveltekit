@@ -1,18 +1,21 @@
 <!--suppress CheckEmptyScriptTag -->
 <script lang="ts">
 	import type { PageServerData } from './$types';
+	// @ts-ignore
 	import Interpreter from 'sciolyff/interpreter';
 	import {
 		dateString,
 		formatSchool,
 		fullTournamentTitle,
-		teamLocation
+		teamLocation,
+		teamAttended
 	} from '$lib/results/helpers';
+	import type Team from 'sciolyff/dist/src/interpreter/team';
 
 	export let data: PageServerData;
 	export let interpreter: Interpreter = new Interpreter(data['result']);
 
-	export function penaltyPoints(team): number {
+	export function penaltyPoints(team: Team): number {
 		let total = 0;
 		team.penalties?.forEach((x) => (total += x.points));
 		return total;
@@ -110,6 +113,21 @@
 						{formatSchool(value)}{value.suffix ? ' ' + value.suffix : ''}<small
 							class="team-location">{teamLocation(value)}</small
 						>
+					{#if value.disqualified}
+						<span class="badge badge-disqualified">
+							<small>Dq</small>
+						</span>
+					{:else if value.exhibition}
+						{#if teamAttended(value)}
+							<span class="badge badge-exhibition">
+								<small>Ex</small>
+							</span>
+						{:else}
+							<span class="badge badge-absent">
+								<small>Ab</small>
+							</span>
+						{/if}
+					{/if}
 					</td>
 					<td class="event-points" />
 					<td class="team-rank">{value.rank}</td>

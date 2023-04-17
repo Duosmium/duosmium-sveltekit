@@ -41,7 +41,11 @@ export async function POST(request: Request) {
 		// Why on earth does this load to a string first and then an object???
 		obj = load(<string>load(data));
 	} catch (e) {
-		obj = JSON.parse(data);
+		try {
+			obj = JSON.parse(data);
+		} catch (e) {
+			throw error(400, 'Invalid data provided!');
+		}
 	}
 	const resultData = await addResult(obj);
 	return new Response(`Result ${resultData['duosmiumId']} created`, { status: 201 });

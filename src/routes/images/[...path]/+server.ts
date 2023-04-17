@@ -1,4 +1,4 @@
-import { supabase } from '../../../lib/global/supabase';
+import { supabase } from '$lib/global/supabase';
 import { error } from '@sveltejs/kit';
 
 export async function DELETE() {
