@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { dump } from 'js-yaml';
 import type { Interpreter, Team, Tournament } from 'sciolyff/dist/src/interpreter/types';
 import { JSON_OPTIONS, STATES_BY_POSTAL_CODE, YAML_OPTIONS } from '$lib/global/helpers';

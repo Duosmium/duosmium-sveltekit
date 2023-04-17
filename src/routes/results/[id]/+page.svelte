@@ -1,6 +1,7 @@
 <!--suppress CheckEmptyScriptTag -->
 <script lang="ts">
 	import type { PageServerData } from './$types';
+	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore
 	import Interpreter from 'sciolyff/interpreter';
 	import {
@@ -8,7 +9,8 @@
 		formatSchool,
 		fullTournamentTitle,
 		teamLocation,
-		teamAttended
+		teamAttended,
+		fullTournamentTitleShort
 	} from '$lib/results/helpers';
 	import type Team from 'sciolyff/dist/src/interpreter/team';
 
@@ -21,6 +23,10 @@
 		return total;
 	}
 </script>
+
+<svelte:head>
+	<title>{fullTournamentTitleShort(interpreter.tournament)} | Duosmium Results</title>
+</svelte:head>
 
 <link rel="stylesheet" href="/css/results-view.css" />
 <div class="results-wrapper">
@@ -113,21 +119,21 @@
 						{formatSchool(value)}{value.suffix ? ' ' + value.suffix : ''}<small
 							class="team-location">{teamLocation(value)}</small
 						>
-					{#if value.disqualified}
-						<span class="badge badge-disqualified">
-							<small>Dq</small>
-						</span>
-					{:else if value.exhibition}
-						{#if teamAttended(value)}
-							<span class="badge badge-exhibition">
-								<small>Ex</small>
+						{#if value.disqualified}
+							<span class="badge badge-disqualified">
+								<small>Dq</small>
 							</span>
-						{:else}
-							<span class="badge badge-absent">
-								<small>Ab</small>
-							</span>
+						{:else if value.exhibition}
+							{#if teamAttended(value)}
+								<span class="badge badge-exhibition">
+									<small>Ex</small>
+								</span>
+							{:else}
+								<span class="badge badge-absent">
+									<small>Ab</small>
+								</span>
+							{/if}
 						{/if}
-					{/if}
 					</td>
 					<td class="event-points" />
 					<td class="team-rank">{value.rank}</td>
