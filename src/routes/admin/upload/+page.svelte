@@ -5,25 +5,23 @@
 <!--	<input type="submit" value="Submit" />-->
 <!--</form>-->
 
-
 <script lang="ts">
-	import * as Form from "$lib/components/ui/form";
-	import { formSchema, type FormSchema } from "./schema";
-	import type { SuperValidated } from "sveltekit-superforms";
+	import * as Form from '$lib/components/ui/form';
+	import { formSchema, type FormSchema } from './schema';
+	import type { SuperValidated } from 'sveltekit-superforms';
 
 	export let form: SuperValidated<FormSchema>;
 </script>
 
-<!--TODO: fix validation/data input errors-->
-
-<div class="container">
-	<div class="pt-12">
-		<Form.Root method="POST" {form} schema={formSchema} let:config>
+<div class="container relative">
+	<div class="pt-8">
+		<h1 class="text-center tracking-tight font-bold text-4xl">Upload Results</h1>
+		<Form.Root method="POST" {form} schema={formSchema} enctype="multipart/form-data" let:config>
 			<Form.Field {config} name="yaml">
 				<Form.Item>
 					<Form.Label>Files</Form.Label>
 					<Form.Input type="file" multiple accept=".yaml,.yml" />
-					<Form.Description>Upload SciolyFF YAML files here.</Form.Description>
+					<Form.Description>Upload SciolyFF YAML here.</Form.Description>
 					<Form.Validation />
 				</Form.Item>
 			</Form.Field>
@@ -31,6 +29,3 @@
 		</Form.Root>
 	</div>
 </div>
-
-
-

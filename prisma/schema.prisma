@@ -70,8 +70,8 @@ model Result {
   duosmium_id      String      @id @unique(map: "results_duosmium_id_index")
   logo             String
   color            String
-  created_at       DateTime    @default(now()) @db.Timestamp(6)
-  updated_at       DateTime    @db.Timestamp(6)
+  created_at       DateTime    @default(now()) @db.Timestamptz(6)
+  updated_at       DateTime    @updatedAt @db.Timestamptz(6)
   official         Boolean     @default(false)
   preliminary      Boolean     @default(false)
   title            String
@@ -90,8 +90,8 @@ model Result {
   teams            Team[]
   tournament       Tournament?
   tracks           Track[]
-  // school_placements SchoolPlacement[]
 
+  // school_placements SchoolPlacement[]
   @@map("results")
 }
 

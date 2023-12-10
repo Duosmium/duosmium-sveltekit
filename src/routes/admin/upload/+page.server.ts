@@ -1,9 +1,6 @@
 import type { Actions } from './$types';
 import { error } from '@sveltejs/kit';
-import {
-	addResult,
-	createCompleteResultDataInput
-} from '$lib/results/async';
+import { addResult, createCompleteResultDataInput } from '$lib/results/async';
 import { load as loadYAML } from 'js-yaml';
 import Interpreter from 'sciolyff/interpreter';
 import { getInterpreter } from '$lib/results/interpreter';
@@ -16,7 +13,6 @@ export const load: PageServerLoad = () => {
 		form: superValidate(formSchema)
 	};
 };
-
 
 export const actions = {
 	default: async ({ request }) => {

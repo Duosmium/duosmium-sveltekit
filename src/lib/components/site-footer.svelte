@@ -8,34 +8,16 @@
 		<div class="flex flex-col items-center gap-4 px-8 md:flex-row md:gap-2 md:px-0">
 			<Icons.logo class="hidden h-6 w-6 md:inline-block" />
 			<p class="text-center text-sm leading-loose text-muted-foreground md:text-left">
-				Built & designed by{' '}
+				Built with love and{' '}
 				<a
-					href={siteConfig.links.shadTwitter}
+					href="https://kit.svelte.dev/"
 					target="_blank"
 					rel="noreferrer"
 					class="font-medium underline underline-offset-4"
 				>
-					shadcn
+					SvelteKit
 				</a>
-				. Ported to Svelte by{' '}
-				<a
-					href={siteConfig.links.twitter}
-					target="_blank"
-					rel="noreferrer"
-					class="font-medium underline underline-offset-4"
-				>
-					huntabyte
-				</a>
-				. The source code is available on{' '}
-				<a
-					href={siteConfig.links.github}
-					target="_blank"
-					rel="noreferrer"
-					class="font-medium underline underline-offset-4"
-				>
-					GitHub
-				</a>
-				.
+				by the Duosmium Results team.
 			</p>
 		</div>
 	</div>

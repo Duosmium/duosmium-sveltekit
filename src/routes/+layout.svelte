@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { dev } from '$app/environment';
 	import { Metadata, SiteFooter, SiteHeader } from '$lib/components';
 	import { updateTheme } from '$lib/utils';
 	import { config } from '$lib/stores';
