@@ -1,0 +1,37 @@
+Tournament:
+  level: Nationals
+  location: Zoom University
+  state: VA
+  division: C
+  year: 2020
+  date: 2020-04-01
+
+Events:
+  - name: Disease Detectives
+  - name: Dynamic Planet
+
+Teams:
+  - school: The Best Around
+    number: 1
+    state: AK
+  - school: The Greatest Around
+    number: 2
+    state: HI
+
+Placings:
+  - event: Disease Detectives
+    team: 1
+    raw:
+      score: -1.0
+      tier: 2
+  - event: Disease Detectives
+    team: 2
+    raw:
+      score: -10.0
+  - event: Dynamic Planet
+    team: 1
+    raw:
+      score: 100.0
+  - event: Dynamic Planet
+    team: 2
+    participated: false

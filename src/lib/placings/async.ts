@@ -101,9 +101,6 @@ export async function createPlacingDataInput(placing: Placing, duosmiumID: strin
 				}
 			}
 		},
-		data: placing.rep,
-		result_duosmium_id: duosmiumID,
-		event_name: placing.event.name,
-		team_number: placing.team.number
+		data: placing.rep
 	};
 }

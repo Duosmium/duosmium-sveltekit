@@ -81,8 +81,8 @@ export async function createTeamDataInput(team: Team) {
 		rank: team.rank,
 		track_rank: team.trackRank === undefined ? null : team.trackRank,
 		name: team.school,
-		city: team.city ? team.city : "",
-		state: team.state in STATES_BY_POSTAL_CODE ? team.state : "",
-		country: team.state in STATES_BY_POSTAL_CODE ? "United States" : team.state,
+		city: team.city ? team.city : '',
+		state: team.state in STATES_BY_POSTAL_CODE ? team.state : '',
+		country: team.state in STATES_BY_POSTAL_CODE ? 'United States' : team.state
 	};
 }

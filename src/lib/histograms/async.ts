@@ -59,9 +59,8 @@ export async function addHistogram(histogramData: object) {
 	});
 }
 
-export async function createHistogramDataInput(histogram: Histogram, duosmiumID: string) {
+export async function createHistogramDataInput(histogram: Histogram) {
 	return {
-		data: histogram.rep,
-		result_duosmium_id: duosmiumID
+		data: histogram.rep
 	};
 }

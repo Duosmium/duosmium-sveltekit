@@ -1,1 +1,4 @@
-// place files you want to import through the `$lib` alias in this folder.
+export * from './colors';
+export * from './themes';
+export * from './schema';
+export * from './styles';

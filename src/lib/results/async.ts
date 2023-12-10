@@ -1,15 +1,14 @@
 // noinspection ES6RedundantAwait
 
-import { addEvent, createEventDataInput } from '$lib/events/async';
-import { STATES_BY_POSTAL_CODE } from '$lib/global/helpers';
-import { addHistogram, createHistogramDataInput } from '$lib/histograms/async';
-import { addPenalty, createPenaltyDataInput } from '$lib/penalties/async';
-import { addPlacing, createPlacingDataInput } from '$lib/placings/async';
+import { createEventDataInput } from '$lib/events/async';
+import { createHistogramDataInput } from '$lib/histograms/async';
+import { createPenaltyDataInput } from '$lib/penalties/async';
+import { createPlacingDataInput } from '$lib/placings/async';
 import { createBgColorFromImagePath } from '$lib/results/color';
 import { createLogoPath } from '$lib/results/logo';
-import { addTeam, createTeamDataInput } from '$lib/teams/async';
-import { addTournament, createTournamentDataInput } from '$lib/tournaments/async';
-import { addTrack, createTrackDataInput } from '$lib/tracks/async';
+import { createTeamDataInput } from '$lib/teams/async';
+import { createTournamentDataInput } from '$lib/tournaments/async';
+import { createTrackDataInput } from '$lib/tracks/async';
 import { load } from 'js-yaml';
 // @ts-ignore
 import Interpreter from 'sciolyff/interpreter';
@@ -296,7 +295,6 @@ export async function createCompleteResultDataInput(interpreter: Interpreter) {
 	}
 	const teamData = [];
 	for (const team of interpreter.teams) {
-		
 		const thisTeamData = await createTeamDataInput(team);
 		teamData.push({
 			create: thisTeamData,
@@ -330,7 +328,7 @@ export async function createCompleteResultDataInput(interpreter: Interpreter) {
 			where: {
 				result_duosmium_id_team_number: {
 					result_duosmium_id: duosmiumID,
-					teamNumber: penalty.team?.number
+					team_number: penalty.team?.number
 				}
 			}
 		});
@@ -363,7 +361,7 @@ export async function createCompleteResultDataInput(interpreter: Interpreter) {
 		// @ts-ignore
 		output['histogram'] = {
 			connectOrCreate: {
-				create: await createHistogramDataInput(interpreter.histograms, duosmiumID),
+				create: await createHistogramDataInput(interpreter.histograms),
 				where: {
 					result_duosmium_id: duosmiumID
 				}

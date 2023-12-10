@@ -82,8 +82,6 @@ export async function createPenaltyDataInput(penalty: Penalty, duosmiumID: strin
 				}
 			}
 		},
-		data: penalty.rep,
-		result_duosmium_id: duosmiumID,
-		team_number: penalty.team.number
+		data: penalty.rep
 	};
 }
