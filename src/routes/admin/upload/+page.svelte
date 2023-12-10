@@ -9,6 +9,13 @@
 	import * as Form from '$lib/components/ui/form';
 	import { formSchema, type FormSchema } from './schema';
 	import type { SuperValidated } from 'sveltekit-superforms';
+	import { addToast } from '$lib/components/toaster.svelte';
+	function uploadToast() {
+		addToast({
+			title: 'Success',
+			description: 'Results uploaded! Please be patient as they are uploaded into the database.'
+		});
+	}
 
 	export let form: SuperValidated<FormSchema>;
 </script>
@@ -25,7 +32,7 @@
 					<Form.Validation />
 				</Form.Item>
 			</Form.Field>
-			<Form.Button>Submit</Form.Button>
+			<Form.Button on:click={uploadToast}>Submit</Form.Button>
 		</Form.Root>
 	</div>
 </div>
