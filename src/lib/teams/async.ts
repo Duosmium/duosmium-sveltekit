@@ -153,19 +153,26 @@ export async function getTournamentsPerSchool(letter: string|undefined = undefin
 
 export async function getFirstLetter() {
 	// https://github.com/prisma/prisma/issues/5068 -- this sort should be case-insensitive but isn't
-	const firstTeam = await prisma.team.findFirst({
+	// until it is, we'll use a different (slower) method to avoid edge cases (e.g. the first letter being D for duPont)
+	// const firstTeam = await prisma.team.findFirst({
+	// 	distinct: ["name"],
+	// 	select: {
+	// 		name: true,
+	// 	},
+	// 	orderBy: {
+	// 		name: 'asc'
+	// 	}
+	// });
+	// if (firstTeam === null) {
+	// 	return "";
+	// }
+	// return firstTeam.name[0].toLowerCase();
+	return (await prisma.team.findMany({
 		distinct: ["name"],
 		select: {
-			name: true,
-		},
-		orderBy: {
-			name: 'asc'
+			name: true
 		}
-	});
-	if (firstTeam === null) {
-		return "";
-	}
-	return firstTeam.name[0].toLowerCase();
+	})).map((t) => t.name.toLowerCase()[0]).sort()[0];
 }
 
 export async function getAllFirstLetters() {
@@ -181,9 +188,10 @@ export async function getAllFirstLetters() {
 	const letters: string[] = [];
 	const letterSet: Set<string> = new Set();
 	for (const team of teamNames) {
-		if (!letterSet.has(team.name[0].toLowerCase())) {
-			letters.push(team.name[0].toLowerCase());
-			letterSet.add(team.name[0].toLowerCase());
+		const lowerLetter = team.name[0].toLowerCase();
+		if (!letterSet.has(lowerLetter)) {
+			letters.push(lowerLetter);
+			letterSet.add(lowerLetter);
 		}
 	}
 	return letters;

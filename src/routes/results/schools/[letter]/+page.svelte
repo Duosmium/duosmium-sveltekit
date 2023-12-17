@@ -3,9 +3,9 @@
   import ResultSchool from "$lib/components/results/result-school.svelte";
   import AllSchoolLetters from "$lib/components/results/all-school-letters.svelte";
   export let data: PageServerData;
-  let allData: Map<string, Map<string, string[]>> = data.allData;
-  let tournamentNames: Map<string, string> = data.tournamentNames;
-  let letters: string[] = data.letters;
+  $: allData = data.allData;
+  $: tournamentNames = data.tournamentNames;
+  $: letters = data.letters;
 </script>
 
 <div class="container">
