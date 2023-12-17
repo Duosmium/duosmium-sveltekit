@@ -18,7 +18,7 @@ export const docsConfig: DocsConfig = {
 		},
 		{
 			title: 'By School',
-			href: '/results/school'
+			href: '/results/schools'
 		}
 	],
 	sidebarNav: [

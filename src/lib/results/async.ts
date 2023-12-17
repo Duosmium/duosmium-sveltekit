@@ -167,9 +167,9 @@ export async function getAllResults(ascending = true, limit = 0) {
 	});
 }
 
-export async function getAllCompleteResults() {
+export async function getAllCompleteResults(ascending = true, limit = 0) {
 	const output = {};
-	for (const result of await getAllResults()) {
+	for (const result of await getAllResults(ascending, limit)) {
 		const duosmiumID = result.duosmium_id;
 		// @ts-ignore
 		output[duosmiumID] = await getCompleteResult(duosmiumID);

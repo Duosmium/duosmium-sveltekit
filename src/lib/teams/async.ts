@@ -1,9 +1,12 @@
 // noinspection ES6RedundantAwait
 
 // @ts-ignore
-import { Team } from 'sciolyff/interpreter';
+import Interpreter, { Team } from 'sciolyff/interpreter';
 import { prisma } from '$lib/global/prisma';
 import { STATES_BY_POSTAL_CODE } from '$lib/global/helpers';
+import { getAllCompleteResults } from "$lib/results/async";
+import { getInterpreter } from "$lib/results/interpreter";
+import { formatSchool, ordinalize, teamLocation } from "$lib/results/helpers";
 
 export async function getTeam(duosmiumID: string, number: number) {
 	return await prisma.team.findUniqueOrThrow({
@@ -85,4 +88,103 @@ export async function createTeamDataInput(team: Team) {
 		state: team.state in STATES_BY_POSTAL_CODE ? team.state : '',
 		country: team.state in STATES_BY_POSTAL_CODE ? 'United States' : team.state
 	};
+}
+
+export async function getTournamentsPerSchool(letter: string|undefined = undefined) {
+	const allTeams = await prisma.team.findMany({
+		select: {
+			name: true,
+			city: true,
+			state: true,
+			country: true,
+			rank: true,
+			result: {
+				select: {
+					full_title: true,
+					duosmium_id: true
+				}
+			}
+		},
+		orderBy: [
+			{
+				name: 'asc',
+			},
+			{
+				city: 'asc',
+			},
+			{
+				state: 'asc',
+			},
+			{
+				country: 'asc'
+			},
+			{
+				result_duosmium_id: 'desc'
+			},
+			{
+				rank: 'asc'
+			}
+		],
+		where: {
+			name: {
+				startsWith: letter,
+				mode: 'insensitive'
+			}
+		}
+	});
+	const rankMap: Map<string, Map<string, string[]>> = new Map();
+	const tournamentNames: Map<string, string> = new Map();
+	for (const team of allTeams) {
+		const teamStr = `${team.name} (${team.city ? `${team.city}, ${team.state}` : `${team.state}`})`;
+		if (!rankMap.has(teamStr)) {
+			rankMap.set(teamStr, new Map());
+		}
+		const tournamentInfo = [team.result.duosmium_id, team.result.full_title];
+		if (!rankMap.get(teamStr)?.has(tournamentInfo[0])) {
+			rankMap.get(teamStr)?.set(tournamentInfo[0], []);
+		}
+		rankMap.get(teamStr)?.get(tournamentInfo[0])?.push(ordinalize(team.rank));
+		if (!tournamentNames.has(tournamentInfo[0])) {
+			tournamentNames.set(tournamentInfo[0], tournamentInfo[1]);
+		}
+	}
+	return [rankMap, tournamentNames];
+}
+
+export async function getFirstLetter() {
+	// https://github.com/prisma/prisma/issues/5068 -- this sort should be case-insensitive but isn't
+	const firstTeam = await prisma.team.findFirst({
+		distinct: ["name"],
+		select: {
+			name: true,
+		},
+		orderBy: {
+			name: 'asc'
+		}
+	});
+	if (firstTeam === null) {
+		return "";
+	}
+	return firstTeam.name[0].toLowerCase();
+}
+
+export async function getAllFirstLetters() {
+	const teamNames = await prisma.team.findMany({
+		distinct: ["name"],
+		select: {
+			name: true
+		},
+		orderBy: {
+			name: 'asc'
+		}
+	});
+	const letters: string[] = [];
+	const letterSet: Set<string> = new Set();
+	for (const team of teamNames) {
+		if (!letterSet.has(team.name[0].toLowerCase())) {
+			letters.push(team.name[0].toLowerCase());
+			letterSet.add(team.name[0].toLowerCase());
+		}
+	}
+	return letters;
 }
