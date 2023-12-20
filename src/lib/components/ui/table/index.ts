@@ -6,6 +6,7 @@ import Footer from './table-footer.svelte';
 import Head from './table-head.svelte';
 import Header from './table-header.svelte';
 import Row from './table-row.svelte';
+import RowWithoutHover from './table-row-without-hover.svelte';
 
 export {
 	Root,
@@ -16,6 +17,7 @@ export {
 	Head,
 	Header,
 	Row,
+	RowWithoutHover,
 	//
 	Root as Table,
 	Body as TableBody,
@@ -24,5 +26,6 @@ export {
 	Footer as TableFooter,
 	Head as TableHead,
 	Header as TableHeader,
-	Row as TableRow
+	Row as TableRow,
+	RowWithoutHover as TableRowWithoutHover
 };

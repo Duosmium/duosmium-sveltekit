@@ -158,22 +158,6 @@ export function teamLocation(team: Team) {
 	return team.city ? `${team.city}, ${team.state}` : `${team.state}`;
 }
 
-// from https://stackoverflow.com/questions/13627308/
-export const ordinalize = (i: number) => {
-	const j = i % 10,
-		k = i % 100;
-	if (j == 1 && k != 11) {
-		return i + 'st';
-	}
-	if (j == 2 && k != 12) {
-		return i + 'nd';
-	}
-	if (j == 3 && k != 13) {
-		return i + 'rd';
-	}
-	return i + 'th';
-};
-
 export function dateString(i: Interpreter): string {
 	const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 	const monthsOfYear = [

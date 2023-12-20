@@ -3,10 +3,10 @@
 // @ts-ignore
 import Interpreter, { Team } from 'sciolyff/interpreter';
 import { prisma } from '$lib/global/prisma';
-import { STATES_BY_POSTAL_CODE } from '$lib/global/helpers';
+import { ordinalize, STATES_BY_POSTAL_CODE } from "$lib/global/helpers";
 import { getAllCompleteResults } from "$lib/results/async";
 import { getInterpreter } from "$lib/results/interpreter";
-import { formatSchool, ordinalize, teamLocation } from "$lib/results/helpers";
+import { formatSchool, teamLocation } from "$lib/results/helpers";
 
 export async function getTeam(duosmiumID: string, number: number) {
 	return await prisma.team.findUniqueOrThrow({
