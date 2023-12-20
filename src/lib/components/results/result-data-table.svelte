@@ -140,7 +140,7 @@
 										>
 											<div class="text-left">
 												<Render of={cell.render()} />
-												<span class="text-xs text-muted-foreground ml-1"
+												<span class="text-xs text-muted-foreground"
 													>({teamMap.get(row.cells[0].value).location})</span
 												>
 											</div>
