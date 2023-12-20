@@ -10,12 +10,6 @@
 	export { className as class };
 </script>
 
-<tr
-	class={cn(
-		'border-b',
-		className
-	)}
-	{...$$restProps}
->
+<tr class={cn('border-b', className)} {...$$restProps}>
 	<slot />
 </tr>

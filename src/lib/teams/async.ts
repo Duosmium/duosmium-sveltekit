@@ -3,10 +3,10 @@
 // @ts-ignore
 import Interpreter, { Team } from 'sciolyff/interpreter';
 import { prisma } from '$lib/global/prisma';
-import { ordinalize, STATES_BY_POSTAL_CODE } from "$lib/global/helpers";
-import { getAllCompleteResults } from "$lib/results/async";
-import { getInterpreter } from "$lib/results/interpreter";
-import { formatSchool, teamLocation } from "$lib/results/helpers";
+import { ordinalize, STATES_BY_POSTAL_CODE } from '$lib/global/helpers';
+import { getAllCompleteResults } from '$lib/results/async';
+import { getInterpreter } from '$lib/results/interpreter';
+import { formatSchool, teamLocation } from '$lib/results/helpers';
 
 export async function getTeam(duosmiumID: string, number: number) {
 	return await prisma.team.findUniqueOrThrow({
@@ -90,7 +90,7 @@ export async function createTeamDataInput(team: Team) {
 	};
 }
 
-export async function getTournamentsPerSchool(letter: string|undefined = undefined) {
+export async function getTournamentsPerSchool(letter: string | undefined = undefined) {
 	const allTeams = await prisma.team.findMany({
 		select: {
 			name: true,
@@ -107,13 +107,13 @@ export async function getTournamentsPerSchool(letter: string|undefined = undefin
 		},
 		orderBy: [
 			{
-				name: 'asc',
+				name: 'asc'
 			},
 			{
-				city: 'asc',
+				city: 'asc'
 			},
 			{
-				state: 'asc',
+				state: 'asc'
 			},
 			{
 				country: 'asc'
@@ -167,17 +167,21 @@ export async function getFirstLetter() {
 	// 	return "";
 	// }
 	// return firstTeam.name[0].toLowerCase();
-	return (await prisma.team.findMany({
-		distinct: ["name"],
-		select: {
-			name: true
-		}
-	})).map((t) => t.name.toLowerCase()[0]).sort()[0];
+	return (
+		await prisma.team.findMany({
+			distinct: ['name'],
+			select: {
+				name: true
+			}
+		})
+	)
+		.map((t) => t.name.toLowerCase()[0])
+		.sort()[0];
 }
 
 export async function getAllFirstLetters() {
 	const teamNames = await prisma.team.findMany({
-		distinct: ["name"],
+		distinct: ['name'],
 		select: {
 			name: true
 		},
