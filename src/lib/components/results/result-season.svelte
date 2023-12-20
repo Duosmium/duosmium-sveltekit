@@ -8,7 +8,7 @@
 </script>
 
 <div class="py-2">
-	<h2 class="font-bold text-2xl tracking-tight text-left pb-1">{season}</h2>
+	<h2 class="font-bold text-2xl tracking-tight text-left pb-1" id={season}>{season}</h2>
 	<hr />
 	<ul class="list-disc pt-1">
 		{#each results as r}

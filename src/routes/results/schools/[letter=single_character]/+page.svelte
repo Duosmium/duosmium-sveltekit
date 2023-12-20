@@ -8,7 +8,7 @@
 	$: letters = data.letters;
 </script>
 
-<div class="container">
+<div class="container relative">
 	<h1 class="text-center tracking-tight font-bold text-4xl pb-2 pt-12">All Results by School</h1>
 	<AllSchoolLetters {letters} />
 	<div>
