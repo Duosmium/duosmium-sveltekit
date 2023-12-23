@@ -1,8 +1,7 @@
-
-import type { PageServerLoad, Actions } from "./$types";
+import type { PageServerLoad, Actions } from './$types';
 import { fail, redirect } from '@sveltejs/kit';
-import { superValidate } from "sveltekit-superforms/server";
-import { formSchema } from "./schema";
+import { superValidate } from 'sveltekit-superforms/server';
+import { formSchema } from './schema';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { setFlash } from 'sveltekit-flash-message/server';
 
@@ -20,9 +19,12 @@ export const actions: Actions = {
 				form
 			});
 		}
-		const nextURL = event.url.searchParams.get("next") ?? "/";
+		const nextURL = event.url.searchParams.get('next') ?? '/';
 		const supabase: SupabaseClient = event.locals.supabase;
-		const {data, error} = await supabase.auth.signInWithPassword({email: form.data.email, password: form.data.password});
+		const { data, error } = await supabase.auth.signInWithPassword({
+			email: form.data.email,
+			password: form.data.password
+		});
 		if (error) {
 			setFlash(
 				{
@@ -31,22 +33,23 @@ export const actions: Actions = {
 				},
 				event
 			);
-		}
-		else {
+		} else {
 			const firstName = data.user?.user_metadata.first_name;
 			const lastName = data.user?.user_metadata.first_name;
-			let message = "Successfully logged in!"
+			let message = 'Successfully logged in!';
 			if (firstName && lastName) {
-				message += " Hello, ";
+				message += ' Hello, ';
 				message += firstName;
 				message += lastName;
 			}
-			setFlash({
-				type: 'success',
-				message: message
-			}, event);
+			setFlash(
+				{
+					type: 'success',
+					message: message
+				},
+				event
+			);
 			throw redirect(303, nextURL);
 		}
 	}
 };
-

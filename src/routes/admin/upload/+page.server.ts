@@ -10,7 +10,7 @@ import { redirect, setFlash } from 'sveltekit-flash-message/server';
 import { fail } from '@sveltejs/kit';
 import { redirectToLoginIfNotAdmin } from '$lib/auth/admin';
 
-export const load: PageServerLoad = async ({locals: {supabase}}) => {
+export const load: PageServerLoad = async ({ locals: { supabase } }) => {
 	await redirectToLoginIfNotAdmin(supabase, '/admin/upload');
 	return {
 		form: superValidate(formSchema)
