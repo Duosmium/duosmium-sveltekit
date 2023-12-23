@@ -21,7 +21,7 @@
 </script>
 
 <div class="container relative">
-	<div class="pt-8">
+	<div class="pt-12">
 		<h1 class="text-center tracking-tight font-bold text-4xl">Upload Results</h1>
 		<Form.Root method="POST" {form} schema={formSchema} enctype="multipart/form-data" let:config>
 			<Form.Field {config} name="yaml">

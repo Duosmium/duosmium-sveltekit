@@ -7,10 +7,11 @@ import type { PageServerLoad } from './$types';
 import { superValidate } from 'sveltekit-superforms/server';
 import { formSchema } from './schema';
 import { redirect, setFlash } from 'sveltekit-flash-message/server';
-import { updateFlash } from 'sveltekit-flash-message';
 import { fail } from '@sveltejs/kit';
+import { redirectToLoginIfNotAdmin } from '$lib/auth/admin';
 
-export const load: PageServerLoad = () => {
+export const load: PageServerLoad = async ({locals: {supabase}}) => {
+	await redirectToLoginIfNotAdmin(supabase, '/admin/upload');
 	return {
 		form: superValidate(formSchema)
 	};
