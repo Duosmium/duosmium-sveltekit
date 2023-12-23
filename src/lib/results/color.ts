@@ -13,7 +13,7 @@ import { findLogoPath } from '$lib/results/logo';
 // @ts-ignore
 import { ContrastChecker } from 'color-contrast-calc';
 import Vibrant from 'node-vibrant';
-import * as nearestColor from 'nearest-color';
+import nearestColor from 'nearest-color';
 
 export async function findBgColor(duosmiumID: string) {
 	if (await resultExists(duosmiumID)) {
@@ -62,7 +62,7 @@ export async function createBgColorFromImagePath(imagePath: string, dark = false
 			].filter((color) => color != null);
 		}
 		if (possibleColors.length > 0) {
-			let nearest = nearestColor.from(colors);
+			const nearest = nearestColor.from(colors);
 			// @ts-ignore
 			output = nearest(possibleColors[0].hex).name;
 			let order;

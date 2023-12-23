@@ -288,7 +288,7 @@ function keywords(interpreter: Interpreter) {
 			? t.date.toLocaleDateString(undefined, {
 					weekday: 'long',
 					timeZone: 'UTC'
-			  })
+				})
 			: null,
 		t.date ? t.date.toLocaleDateString(undefined, { month: 'long', timeZone: 'UTC' }) : null,
 		t.date ? t.date.getUTCDate() : null,
@@ -298,13 +298,13 @@ function keywords(interpreter: Interpreter) {
 			? t.startDate.toLocaleDateString(undefined, {
 					weekday: 'long',
 					timeZone: 'UTC'
-			  })
+				})
 			: null,
 		t.startDate
 			? t.startDate.toLocaleDateString(undefined, {
 					month: 'long',
 					timeZone: 'UTC'
-			  })
+				})
 			: null,
 		t.startDate ? t.startDate.getUTCDate() : null,
 		t.startDate ? t.startDate.getUTCFullYear() : null,
@@ -313,13 +313,13 @@ function keywords(interpreter: Interpreter) {
 			? t.endDate.toLocaleDateString(undefined, {
 					weekday: 'long',
 					timeZone: 'UTC'
-			  })
+				})
 			: null,
 		t.endDate
 			? t.endDate.toLocaleDateString(undefined, {
 					month: 'long',
 					timeZone: 'UTC'
-			  })
+				})
 			: null,
 		t.endDate ? t.endDate.getUTCDate() : null,
 		t.endDate ? t.endDate.getUTCFullYear() : null,
@@ -372,7 +372,7 @@ export function bidsSupTagNote(tournament: Tournament) {
 	const nextTournament =
 		tournament.level === 'Regionals'
 			? // @ts-ignore
-			  `${tournament.state.replace('sCA', 'SoCal').replace('nCA', 'NorCal')} State Tournament`
+				`${tournament.state.replace('sCA', 'SoCal').replace('nCA', 'NorCal')} State Tournament`
 			: 'National Tournament';
 	// @ts-ignore
 	const qualifiee = tournament.bidsPerSchool > 1 ? 'team' : 'school';
