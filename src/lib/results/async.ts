@@ -236,10 +236,10 @@ export async function addResult(resultData: object) {
 	});
 }
 
-export async function createResultDataInput(interpreter: Interpreter) {
+export async function createResultDataInput(interpreter: Interpreter, logo: string | undefined, color: string | undefined) {
 	const duosmiumID = generateFilename(interpreter);
-	const logo = await createLogoPath(duosmiumID);
-	const color = await createBgColorFromImagePath(logo);
+	logo = logo ?? await createLogoPath(duosmiumID, undefined);
+	color = color ?? await createBgColorFromImagePath(logo);
 	const title = tournamentTitle(interpreter.tournament);
 	const fullTitle = fullTournamentTitle(interpreter.tournament);
 	const shortTitle = tournamentTitleShort(interpreter.tournament);
@@ -264,7 +264,7 @@ export async function createResultDataInput(interpreter: Interpreter) {
 	};
 }
 
-export async function createCompleteResultDataInput(interpreter: Interpreter) {
+export async function createCompleteResultDataInput(interpreter: Interpreter, logo: string | undefined = undefined, color: string | undefined = undefined) {
 	const duosmiumID = generateFilename(interpreter);
 	const tournamentData = await createTournamentDataInput(interpreter.tournament);
 	const eventData = [];
@@ -333,7 +333,7 @@ export async function createCompleteResultDataInput(interpreter: Interpreter) {
 			}
 		});
 	}
-	const output = await createResultDataInput(interpreter);
+	const output = await createResultDataInput(interpreter, logo, color);
 	output['tournament'] = {
 		connectOrCreate: {
 			create: tournamentData,
