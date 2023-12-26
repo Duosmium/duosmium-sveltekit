@@ -23,6 +23,7 @@
 		"chroma-js": "^2.4.2",
 		"clsx": "^2.0.0",
 		"color-contrast-calc": "^0.4.1",
+		"dotenv": "^16.3.1",
 		"escape-html": "^1.0.3",
 		"hast-util-to-html": "^8.0.4",
 		"js-yaml": "^4.1.0",
@@ -54,6 +55,7 @@
 	"devDependencies": {
 		"@playwright/test": "^1.28.1",
 		"@sveltejs/adapter-auto": "^3.0.0",
+		"@sveltejs/adapter-node": "^2.0.2",
 		"@sveltejs/kit": "^2.0.0",
 		"@sveltejs/vite-plugin-svelte": "^3.0.0",
 		"@types/async": "^3.2.18",
