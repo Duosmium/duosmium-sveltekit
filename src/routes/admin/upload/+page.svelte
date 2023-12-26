@@ -17,7 +17,7 @@
 			title: 'Success',
 			description: 'Results uploaded! Please be patient as they are added to the database.'
 		});
-		throw redirect(303, $page.url);
+		redirect(303, $page.url);
 	}
 
 	export let form: SuperValidated<FormSchema>;

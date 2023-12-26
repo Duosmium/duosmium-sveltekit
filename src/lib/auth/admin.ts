@@ -13,6 +13,6 @@ export async function isAdmin(supabase: SupabaseClient) {
 
 export async function redirectToLoginIfNotAdmin(supabase: SupabaseClient, next: string) {
 	if (!(await isAdmin(supabase))) {
-		throw redirect(302, `/auth/login?next=${next}`);
+		redirect(302, `/auth/login?next=${next}`);
 	}
 }

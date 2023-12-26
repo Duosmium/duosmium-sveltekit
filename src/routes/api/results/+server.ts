@@ -12,7 +12,7 @@ import { isAdmin } from '$lib/auth/admin';
 
 export async function DELETE({ locals: { supabase } }) {
 	if (!(await isAdmin(supabase))) {
-		throw error(403, 'You are not authorized to delete results!');
+		error(403, 'You are not authorized to delete results!');
 	}
 	await deleteAllResults();
 	return new Response(null, { status: 204 });
@@ -29,11 +29,11 @@ export async function PATCH() {
 
 export async function POST({ request, locals: { supabase } }) {
 	if (!(await isAdmin(supabase))) {
-		throw error(403, 'You are not authorized to add results!');
+		error(403, 'You are not authorized to add results!');
 	}
 	const body = request.body;
 	if (body === null) {
-		throw error(400, 'No data provided!');
+		error(400, 'No data provided!');
 	}
 	let data = '';
 	let readDone = false;

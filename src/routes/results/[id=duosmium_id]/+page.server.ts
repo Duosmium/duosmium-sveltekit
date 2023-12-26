@@ -134,7 +134,7 @@ function createTableData(placingData: Map<string, Map<string, string>>, eventDat
 export const load: PageServerLoad = async ({ params }) => {
 	const duosmiumID = params.id;
 	if (!(await resultExists(duosmiumID))) {
-		throw error(404);
+		error(404);
 	}
 	const rep = await getCompleteResult(duosmiumID);
 	const res = await getResult(duosmiumID);

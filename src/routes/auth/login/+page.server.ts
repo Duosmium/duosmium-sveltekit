@@ -49,7 +49,7 @@ export const actions: Actions = {
 				},
 				event
 			);
-			throw redirect(303, nextURL);
+			redirect(303, nextURL);
 		}
 	}
 };

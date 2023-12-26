@@ -6,7 +6,7 @@ import { redirect } from '@sveltejs/kit';
 
 export const handle: Handle = async ({ event, resolve }) => {
 	if (MAINTENANCE_MODE === 'true' && event.url.pathname !== '/maintenance') {
-		throw redirect(303, '/maintenance');
+		redirect(303, '/maintenance');
 	}
 	event.locals.supabase = createServerClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
 		cookies: {
