@@ -14,9 +14,9 @@
 		{#each results as r}
 			<li class="list-inside">
 				<a href="/results/{r.duosmium_id}" class="text-sky-700 dark:text-sky-500 hover:underline"
-					>{r.full_title}</a
+					>{r.title}</a
 				>{' '}
-				— {r.date} @ {r.location_name}
+				— {r.date} @ {r.tournament.location}
 				{#if r.official}
 					<OfficialBadge class="ml-1" />
 				{/if}

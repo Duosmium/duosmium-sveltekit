@@ -33,14 +33,15 @@ export async function getResult(duosmiumID: string) {
 }
 
 async function getCompleteResultData(duosmiumID: string) {
-	const [tournamentData, eventData, trackData, teamData, placingData, penaltyData, histogramData] =
+	const [resultData, eventData, trackData, teamData, placingData, penaltyData] =
 		await prisma.$transaction([
-			prisma.tournament.findUnique({
+			prisma.result.findUnique({
 				where: {
-					result_duosmium_id: duosmiumID
+					duosmium_id: duosmiumID
 				},
 				select: {
-					data: true
+					tournament: true,
+					histogram: true
 				}
 			}),
 			prisma.event.findMany({
@@ -103,16 +104,16 @@ async function getCompleteResultData(duosmiumID: string) {
 					data: true
 				}
 			}),
-			prisma.histogram.findUnique({
-				where: {
-					result_duosmium_id: duosmiumID
-				},
-				select: {
-					data: true
-				}
-			})
+			// prisma.histogram.findUnique({
+			// 	where: {
+			// 		result_duosmium_id: duosmiumID
+			// 	},
+			// 	select: {
+			// 		data: true
+			// 	}
+			// })
 		]);
-	return [tournamentData, eventData, trackData, teamData, placingData, penaltyData, histogramData];
+	return [resultData.tournament, eventData, trackData, teamData, placingData, penaltyData, resultData.histogram];
 }
 
 export async function getCompleteResult(duosmiumID: string) {
@@ -122,7 +123,7 @@ export async function getCompleteResult(duosmiumID: string) {
 	const output = {};
 	if (tournamentData !== null) {
 		// @ts-ignore
-		output['Tournament'] = tournamentData.data;
+		output['Tournament'] = tournamentData;
 	}
 	// @ts-ignore
 	if (eventData.length > 0) {
@@ -149,9 +150,9 @@ export async function getCompleteResult(duosmiumID: string) {
 		// @ts-ignore
 		output['Penalties'] = penaltyData.map((i) => i.data);
 	}
-	if (histogramData !== null) {
+	if (histogramData) {
 		// @ts-ignore
-		output['Histograms'] = histogramData.data;
+		output['Histograms'] = histogramData;
 	}
 	return output;
 }
@@ -236,37 +237,46 @@ export async function addResult(resultData: object) {
 	});
 }
 
-export async function createResultDataInput(interpreter: Interpreter, logo: string | undefined, color: string | undefined) {
+export async function createResultDataInput(interpreter: Interpreter, logo: string | undefined = undefined, color: string | undefined = undefined) {
 	const duosmiumID = generateFilename(interpreter);
 	logo = logo ?? await createLogoPath(duosmiumID, undefined);
-	color = color ?? await createBgColorFromImagePath(logo);
-	const title = tournamentTitle(interpreter.tournament);
-	const fullTitle = fullTournamentTitle(interpreter.tournament);
-	const shortTitle = tournamentTitleShort(interpreter.tournament);
-	const fullShortTitle = fullTournamentTitleShort(interpreter.tournament);
+	// color = color ?? await createBgColorFromImagePath(logo);
+	// const title = tournamentTitle(interpreter.tournament);
+	// const fullTitle = fullTournamentTitle(interpreter.tournament);
+	// const shortTitle = tournamentTitleShort(interpreter.tournament);
+	// const fullShortTitle = fullTournamentTitleShort(interpreter.tournament);
+	const title = fullTournamentTitle(interpreter.tournament);
+	const shortTitle = fullTournamentTitleShort(interpreter.tournament);
 	const date = dateString(interpreter);
-	const locationName = interpreter.tournament.location;
-	const locationState = interpreter.tournament.state;
+	// const locationName = interpreter.tournament.location;
+	// const locationState = interpreter.tournament.state;
+	// const location = interpreter.tournament.location;
+	const tournament = interpreter.tournament.rep;
+	const histogram = interpreter.histograms?.rep;
 	return {
 		logo: logo,
-		color: color,
+		// color: color,
+		// title: title,
+		// full_title: fullTitle,
+		// short_title: shortTitle,
+		// full_short_title: fullShortTitle,
 		title: title,
-		full_title: fullTitle,
 		short_title: shortTitle,
-		full_short_title: fullShortTitle,
 		date: date,
-		location_name: locationName,
-		location_city: '',
-		location_state: locationState,
-		location_country: 'United States',
-		updated_at: new Date(),
-		duosmium_id: duosmiumID
+		// location_name: locationName,
+		// location_city: '',
+		// location_state: locationState,
+		// location_country: 'United States',
+		// location: location,
+		duosmium_id: duosmiumID,
+		tournament: tournament,
+		histogram: histogram
 	};
 }
 
 export async function createCompleteResultDataInput(interpreter: Interpreter, logo: string | undefined = undefined, color: string | undefined = undefined) {
 	const duosmiumID = generateFilename(interpreter);
-	const tournamentData = await createTournamentDataInput(interpreter.tournament);
+	// const tournamentData = await createTournamentDataInput(interpreter.tournament);
 	const eventData = [];
 	for (const event of interpreter.events) {
 		const thisEventData = await createEventDataInput(event);
@@ -334,14 +344,14 @@ export async function createCompleteResultDataInput(interpreter: Interpreter, lo
 		});
 	}
 	const output = await createResultDataInput(interpreter, logo, color);
-	output['tournament'] = {
-		connectOrCreate: {
-			create: tournamentData,
-			where: {
-				result_duosmium_id: duosmiumID
-			}
-		}
-	};
+	// output['tournament'] = {
+	// 	connectOrCreate: {
+	// 		create: tournamentData,
+	// 		where: {
+	// 			result_duosmium_id: duosmiumID
+	// 		}
+	// 	}
+	// };
 	output['events'] = {
 		connectOrCreate: eventData
 	};
@@ -357,17 +367,17 @@ export async function createCompleteResultDataInput(interpreter: Interpreter, lo
 	output['penalties'] = {
 		connectOrCreate: penaltyData
 	};
-	if (interpreter.histograms) {
-		// @ts-ignore
-		output['histogram'] = {
-			connectOrCreate: {
-				create: await createHistogramDataInput(interpreter.histograms),
-				where: {
-					result_duosmium_id: duosmiumID
-				}
-			}
-		};
-	}
+	// if (interpreter.histograms) {
+	// 	// @ts-ignore
+	// 	output['histogram'] = {
+	// 		connectOrCreate: {
+	// 			create: await createHistogramDataInput(interpreter.histograms),
+	// 			where: {
+	// 				result_duosmium_id: duosmiumID
+	// 			}
+	// 		}
+	// 	};
+	// }
 	return output;
 }
 
@@ -386,9 +396,23 @@ export async function getRecentResults(ascending = true, limit = 0) {
 	return await prisma.result.findMany({
 		orderBy: [
 			{
+				created_at: 'desc'
+			},
+			{
 				duosmium_id: ascending ? 'asc' : 'desc'
 			}
 		],
 		take: limit === 0 ? undefined : limit
 	});
+}
+
+export async function countResultsByLevel(level: string) {
+	return await prisma.result.count({
+		where: {
+			tournament: {
+				path: ['level'],
+				equals: level
+			}
+		}
+	})
 }

@@ -9,13 +9,13 @@
 
 <div class="container mx-auto overflow-scroll">
 	<h1 class="text-3xl tracking-tight font-bold text-center pb-4 pt-12">
-		{res.full_title}
+		{res.title}
 	</h1>
 	<p class="text-lg tracking-tight text-muted-foreground text-center">
 		{res.date}
 	</p>
 	<p class="text-lg tracking-tight text-muted-foreground text-center pb-4">
-		@ {res.location_name}
+		@ {res.tournament.location}
 	</p>
 	<ResultDataTable
 		teamData={data.teamData}

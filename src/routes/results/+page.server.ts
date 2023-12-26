@@ -1,6 +1,5 @@
 import type { PageServerLoad } from './$types';
-import { getAllResults, getRecentResults } from '$lib/results/async';
-import { countAllTournamentsByLevel } from '$lib/tournaments/async';
+import { countResultsByLevel, getAllResults, getRecentResults } from "$lib/results/async";
 
 export const load: PageServerLoad = async () => {
 	const allResults = await getAllResults(false, 24);
@@ -23,7 +22,7 @@ export const load: PageServerLoad = async () => {
 		// @ts-ignore
 		const pretty: string = levelToPretty[level];
 		// @ts-ignore
-		countsByLevel[pretty] = await countAllTournamentsByLevel(level);
+		countsByLevel[pretty] = await countResultsByLevel(level);
 		// countsByLevel[pretty] = allTournamentsOfLevel.length;
 		// @ts-ignore
 		countsByLevel['Total'] += countsByLevel[pretty];

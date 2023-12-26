@@ -10,6 +10,7 @@ export async function addManyYAMLs(yamls: string[]) {
     await supabase.storage.from('images').list('logos', { limit: 1048576 })
   ).data?.map((img) => img.name);
   const resultDataInputs = [];
+  const times = new Map();
   const colorMap: Map<string, string> = new Map<string, string>();
   for (let i = 0; i < yamls.length; i++) {
     const interpreter = getInterpreter(yamls[i]);
@@ -22,11 +23,14 @@ export async function addManyYAMLs(yamls: string[]) {
       color = await createBgColorFromImagePath(logo);
       colorMap.set(logo, color);
     }
-    const prom = createCompleteResultDataInput(interpreter, logo, color).then(res => {resultDataInputs.splice(resultDataInputs.indexOf(prom), 1); return res;});
+    times.set(duosmiumID, Date.now());
+    const prom = createCompleteResultDataInput(interpreter, logo, color).then(res => {const newTime = Date.now(); console.log(`Generated data for ${res.duosmium_id} in ${newTime - times.get(res.duosmium_id)} ms`); times.set(res.duosmium_id, newTime); return res});
     resultDataInputs.push(prom);
   }
   const inputs = await Promise.all(resultDataInputs);
-  for (const input of inputs) {
+  for (let i = 0; i < inputs.length; i++) {
+    const input = inputs[i];
     await addResult(input);
+    console.log(`Added data for ${input.duosmium_id} in ${Date.now() - times.get(input.duosmium_id)} ms`);
   }
 }

@@ -6,6 +6,6 @@
 
 <li class="list-inside">
 	<a href="/results/{result.duosmium_id}" class="text-md hover:underline">
-		{result.full_short_title}
+		{result.short_title}
 	</a>
 </li>

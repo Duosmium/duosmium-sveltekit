@@ -139,7 +139,7 @@ export async function getTournamentsPerSchool(letter: string | undefined = undef
 		if (!rankMap.has(teamStr)) {
 			rankMap.set(teamStr, new Map());
 		}
-		const tournamentInfo = [team.result.duosmium_id, team.result.full_title];
+		const tournamentInfo = [team.result.duosmium_id, team.result.title];
 		if (!rankMap.get(teamStr)?.has(tournamentInfo[0])) {
 			rankMap.get(teamStr)?.set(tournamentInfo[0], []);
 		}

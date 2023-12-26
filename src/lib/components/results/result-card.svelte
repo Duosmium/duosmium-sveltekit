@@ -10,8 +10,8 @@
 <Card.Root class="flex flex-col">
 	<a href="/results/{meta.duosmium_id}" class="flex flex-grow flex-col">
 		<Card.Header>
-			<Card.Title class="leading-tight hover:underline">{meta.full_title}</Card.Title>
-			<Card.Description>{meta.date} @ {meta.location_name}</Card.Description>
+			<Card.Title class="leading-tight hover:underline">{meta.title}</Card.Title>
+			<Card.Description>{meta.date} @ {meta.tournament.location}</Card.Description>
 			<div>
 				{#if meta.official}
 					<OfficialBadge />
@@ -24,7 +24,7 @@
 		<Card.Content class="bg-no-repeat bg-center flex-grow flex flex-col-reverse">
 			<img
 				src={meta.logo}
-				alt="Logo for the {meta.full_title}"
+				alt="Logo for the {meta.title}"
 				width="1024"
 				height="1024"
 				class="object-contain inset-0 mx-auto mb-0"
