@@ -16,9 +16,11 @@ export async function createLogoPath(duosmiumID: string, images: string[] | unde
 	const tournamentName = duosmiumID.slice(11, -2).replace('_no_builds', '');
 	const getYear = (image: string) => parseInt(image.match(/^\d+/)?.[0] ?? '0');
 
-	images = images ?? (
-		await supabase.storage.from('images').list('logos', { limit: 1048576 })
-	).data?.map((img) => img.name);
+	images =
+		images ??
+		(await supabase.storage.from('images').list('logos', { limit: 1048576 })).data?.map(
+			(img) => img.name
+		);
 	let selected: string;
 	if (images == null) {
 		selected = 'default.jpg';

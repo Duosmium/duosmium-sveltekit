@@ -103,7 +103,7 @@ async function getCompleteResultData(duosmiumID: string) {
 				select: {
 					data: true
 				}
-			}),
+			})
 			// prisma.histogram.findUnique({
 			// 	where: {
 			// 		result_duosmium_id: duosmiumID
@@ -113,7 +113,15 @@ async function getCompleteResultData(duosmiumID: string) {
 			// 	}
 			// })
 		]);
-	return [resultData.tournament, eventData, trackData, teamData, placingData, penaltyData, resultData.histogram];
+	return [
+		resultData.tournament,
+		eventData,
+		trackData,
+		teamData,
+		placingData,
+		penaltyData,
+		resultData.histogram
+	];
 }
 
 export async function getCompleteResult(duosmiumID: string) {
@@ -237,9 +245,13 @@ export async function addResult(resultData: object) {
 	});
 }
 
-export async function createResultDataInput(interpreter: Interpreter, logo: string | undefined = undefined, color: string | undefined = undefined) {
+export async function createResultDataInput(
+	interpreter: Interpreter,
+	logo: string | undefined = undefined,
+	color: string | undefined = undefined
+) {
 	const duosmiumID = generateFilename(interpreter);
-	logo = logo ?? await createLogoPath(duosmiumID, undefined);
+	logo = logo ?? (await createLogoPath(duosmiumID, undefined));
 	// color = color ?? await createBgColorFromImagePath(logo);
 	// const title = tournamentTitle(interpreter.tournament);
 	// const fullTitle = fullTournamentTitle(interpreter.tournament);
@@ -274,7 +286,11 @@ export async function createResultDataInput(interpreter: Interpreter, logo: stri
 	};
 }
 
-export async function createCompleteResultDataInput(interpreter: Interpreter, logo: string | undefined = undefined, color: string | undefined = undefined) {
+export async function createCompleteResultDataInput(
+	interpreter: Interpreter,
+	logo: string | undefined = undefined,
+	color: string | undefined = undefined
+) {
 	const duosmiumID = generateFilename(interpreter);
 	// const tournamentData = await createTournamentDataInput(interpreter.tournament);
 	const eventData = [];
@@ -414,5 +430,5 @@ export async function countResultsByLevel(level: string) {
 				equals: level
 			}
 		}
-	})
+	});
 }

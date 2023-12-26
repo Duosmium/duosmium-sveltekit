@@ -9,8 +9,7 @@ const prismaClientSingleton = () => {
 			db: {
 				url: DATABASE_URL
 			}
-		},
-		log: ['query']
+		}
 	});
 };
 

@@ -10,11 +10,14 @@
 	import { formSchema, type FormSchema } from './schema';
 	import type { SuperValidated } from 'sveltekit-superforms';
 	import { addToast } from '$lib/components/toaster.svelte';
+	import { redirect } from '@sveltejs/kit';
+	import { page } from '$app/stores';
 	function uploadToast() {
 		addToast({
 			title: 'Success',
-			description: 'Results uploaded! Please be patient as they are uploaded into the database.'
+			description: 'Results uploaded! Please be patient as they are added to the database.'
 		});
+		throw redirect(303, $page.url);
 	}
 
 	export let form: SuperValidated<FormSchema>;

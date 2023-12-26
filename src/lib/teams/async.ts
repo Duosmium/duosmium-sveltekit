@@ -100,7 +100,7 @@ export async function getTournamentsPerSchool(letter: string | undefined = undef
 			rank: true,
 			result: {
 				select: {
-					full_title: true,
+					title: true,
 					duosmium_id: true
 				}
 			}

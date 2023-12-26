@@ -6,10 +6,10 @@ import type { Actions } from './$types';
 import type { PageServerLoad } from './$types';
 import { superValidate } from 'sveltekit-superforms/server';
 import { formSchema } from './schema';
-import { redirect, setFlash } from 'sveltekit-flash-message/server';
-import { fail } from '@sveltejs/kit';
+// import { redirect, setFlash } from 'sveltekit-flash-message/server';
+import { fail, redirect } from '@sveltejs/kit';
 import { redirectToLoginIfNotAdmin } from '$lib/auth/admin';
-import { addManyYAMLs } from "$lib/results/optimize";
+import { addManyYAMLs } from '$lib/results/optimize';
 
 export const load: PageServerLoad = async ({ locals: { supabase } }) => {
 	await redirectToLoginIfNotAdmin(supabase, '/admin/upload');
@@ -24,15 +24,6 @@ export const actions = {
 		const data = await request.formData();
 		const allFiles = data.getAll('yaml');
 		const allData: string[] = [];
-		setFlash(
-			{
-				type: 'success',
-				message: `Uploaded ${allFiles.length} file${
-					allFiles.length === 1 ? '' : 's'
-				}! Please be patient as the results are imported.`
-			},
-			event
-		);
 		// const q = ResultsAddQueue.getInstance();
 		// q.drain(function () {
 		// 	console.log('All results have been added!');
@@ -40,7 +31,7 @@ export const actions = {
 		// const generating_input = [];
 		for (const file of allFiles) {
 			if (file === null || typeof file === 'string') {
-				setFlash({ type: 'error', message: 'Uploaded value is not a file!' }, event);
+				// setFlash({ type: 'error', message: 'Uploaded value is not a file!' }, event);
 				fail(400);
 			}
 			// q.push(file);
@@ -56,12 +47,6 @@ export const actions = {
 		// 	await addResult(input);
 		// }
 		await addManyYAMLs(allData);
-		throw redirect(
-			{
-				type: 'success',
-				message: `Imported ${allData.length} result${allData.length === 1 ? '' : 's'}!`
-			},
-			event
-		);
+		redirect(303, request.url);
 	}
 } satisfies Actions;

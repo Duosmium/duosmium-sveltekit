@@ -1,5 +1,5 @@
 import type { PageServerLoad } from './$types';
-import { countResultsByLevel, getAllResults, getRecentResults } from "$lib/results/async";
+import { countResultsByLevel, getAllResults, getRecentResults } from '$lib/results/async';
 
 export const load: PageServerLoad = async () => {
 	const allResults = await getAllResults(false, 24);
