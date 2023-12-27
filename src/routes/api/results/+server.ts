@@ -1,7 +1,6 @@
 import { load } from 'js-yaml';
 import {
-	addResult,
-	createResultDataInput,
+	addResult, createCompleteResultDataInput,
 	deleteAllResults,
 	getAllCompleteResults
 } from '$lib/results/async';
@@ -21,10 +20,6 @@ export async function DELETE({ locals: { supabase } }) {
 export async function GET({ request }) {
 	const allResults = await getAllCompleteResults();
 	return exportYAMLOrJSON(new URL(request.url), allResults, 'results');
-}
-
-export async function PATCH() {
-	return new Response(null, { status: 405, headers: { Allow: 'DELETE, GET, POST' } });
 }
 
 export async function POST({ request, locals: { supabase } }) {
@@ -57,10 +52,6 @@ export async function POST({ request, locals: { supabase } }) {
 		obj = JSON.parse(data);
 	}
 	const interpreter = await getInterpreter(obj);
-	const result = await addResult(await createResultDataInput(interpreter));
+	const result = await addResult(await createCompleteResultDataInput(interpreter));
 	return json(result, { status: 201 });
-}
-
-export async function PUT() {
-	return new Response(null, { status: 405, headers: { Allow: 'DELETE, GET, POST' } });
 }
