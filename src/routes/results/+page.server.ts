@@ -1,9 +1,10 @@
 import type { PageServerLoad } from './$types';
-import { countResultsByLevel, getAllResults, getRecentResults } from '$lib/results/async';
+import { getFromAPI } from '$lib/global/api';
 
 export const load: PageServerLoad = async () => {
-	const allResults = await getAllResults(false, 24);
-	const recents = await getRecentResults(false, 5);
+	const allResults = await getFromAPI('/results/recent');
+	const recents = await getFromAPI('/results/latest');
+	const counts = await getFromAPI('/results/count');
 	const countsByLevel = {
 		'National Tournaments': 0,
 		'State Tournaments': 0,
@@ -18,12 +19,8 @@ export const load: PageServerLoad = async () => {
 		Invitational: 'Invitationals'
 	};
 	for (const level of Object.keys(levelToPretty)) {
-		// const allTournamentsOfLevel = await getAllTournamentsByLevel(level);
-		// @ts-ignore
-		const pretty: string = levelToPretty[level];
-		// @ts-ignore
-		countsByLevel[pretty] = await countResultsByLevel(level);
-		// countsByLevel[pretty] = allTournamentsOfLevel.length;
+		const pretty = levelToPretty[level];
+		countsByLevel[pretty] = counts[level];
 		// @ts-ignore
 		countsByLevel['Total'] += countsByLevel[pretty];
 	}

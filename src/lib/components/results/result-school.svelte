@@ -1,7 +1,9 @@
 <script lang="ts">
+	import { ordinalize } from '$lib/global/helpers';
+
 	export let name: string;
-	export let ranks: Map<string, string[]>;
-	export let tournamentNames: Map<string, string>;
+	export let ranks: object;
+	export let tournamentNames: object;
 </script>
 
 <div class="py-2">
@@ -10,12 +12,12 @@
 	</h2>
 	<hr />
 	<ul class="list-disc pt-1">
-		{#each ranks as value}
+		{#each Object.keys(ranks) as value}
 			<li class="list-inside">
-				<a href={`/results/${value[0]}`} class="text-sky-700 dark:text-sky-500 hover:underline">
-					{tournamentNames.get(value[0])}
+				<a href={`/results/${value}`} class="text-sky-700 dark:text-sky-500 hover:underline">
+					{tournamentNames[value]}
 				</a>{' '}
-				— {value[1].join(', ')}
+				— {ranks[value].map((n) => ordinalize(n)).join(', ')}
 			</li>
 		{/each}
 	</ul>

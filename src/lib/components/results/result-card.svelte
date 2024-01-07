@@ -4,6 +4,7 @@
 	import type { Result } from '@prisma/client';
 	import OfficialBadge from './official-badge.svelte';
 	import PreliminaryBadge from './preliminary-badge.svelte';
+	import { PUBLIC_API_URL } from '$env/static/public';
 	export let meta: Result;
 </script>
 

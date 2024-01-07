@@ -1,5 +1,4 @@
 import type { PageServerLoad } from './$types';
-import { getCompleteResult, getResult, resultExists } from '$lib/results/async';
 import { error } from '@sveltejs/kit';
 import type Interpreter from 'sciolyff/interpreter';
 import { getInterpreter } from '$lib/results/interpreter';
@@ -13,6 +12,7 @@ import {
 } from '$lib/results/helpers';
 import { Placing, Team } from 'sciolyff/interpreter';
 import { ordinalize } from '$lib/global/helpers';
+import { getFromAPI } from '$lib/global/api';
 
 function className(orig: string) {
 	return orig.toLowerCase().replaceAll(/\s+/g, '_').replaceAll(/\W/g, '');
@@ -133,11 +133,8 @@ function createTableData(placingData: Map<string, Map<string, string>>, eventDat
 
 export const load: PageServerLoad = async ({ params }) => {
 	const duosmiumID = params.id;
-	if (!(await resultExists(duosmiumID))) {
-		error(404);
-	}
-	const rep = await getCompleteResult(duosmiumID);
-	const res = await getResult(duosmiumID);
+	const res = await getFromAPI(`/results/${duosmiumID}/meta`);
+	const rep = await getFromAPI(`/results/${duosmiumID}`);
 	const interpreter: Interpreter = getInterpreter(rep);
 	const footnotes = {
 		bids: false,

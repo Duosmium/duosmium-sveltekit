@@ -4,6 +4,8 @@ import { superValidate } from 'sveltekit-superforms/server';
 import { formSchema } from './schema';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { setFlash } from 'sveltekit-flash-message/server';
+import { PUBLIC_API_URL } from '$env/static/public';
+import { addToast } from '$lib/components/toaster.svelte';
 
 export const load: PageServerLoad = () => {
 	return {
@@ -20,35 +22,27 @@ export const actions: Actions = {
 			});
 		}
 		const nextURL = event.url.searchParams.get('next') ?? '/';
-		const supabase: SupabaseClient = event.locals.supabase;
-		const { data, error } = await supabase.auth.signInWithPassword({
+		const creds = JSON.stringify({
 			email: form.data.email,
 			password: form.data.password
 		});
-		if (error) {
-			setFlash(
-				{
-					type: 'error',
-					message: error.message
-				},
-				event
-			);
-		} else {
-			const firstName = data.user?.user_metadata.first_name;
-			const lastName = data.user?.user_metadata.first_name;
-			let message = 'Successfully logged in!';
-			if (firstName && lastName) {
-				message += ' Hello, ';
-				message += firstName;
-				message += lastName;
-			}
-			setFlash(
-				{
-					type: 'success',
-					message: message
-				},
-				event
-			);
+		const apiCall = await fetch(`${PUBLIC_API_URL}/auth/login`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: creds
+		});
+		if (apiCall.ok) {
+			const session = await apiCall.json();
+			const sessionString = JSON.stringify(session);
+			event.cookies.set('duosmium-auth-token', sessionString, {
+				httpOnly: true,
+				secure: true,
+				sameSite: 'strict',
+				maxAge: 60 * 60 * 24,
+				path: '/'
+			});
 			redirect(303, nextURL);
 		}
 	}

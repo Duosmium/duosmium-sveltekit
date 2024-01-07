@@ -1,22 +1,11 @@
-import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import type { SupabaseClient } from '@supabase/supabase-js';
+import { PUBLIC_API_URL } from '$env/static/public';
+import { error } from '@sveltejs/kit';
 
-export const GET: RequestHandler = async ({
-	params,
-	locals: { supabase }
-}: {
-	params: { path: string };
-	locals: { supabase: SupabaseClient };
-}) => {
-	const output = await supabase.storage.from('images').download(params.path);
-	if (output.error) {
-		if (output.error.message === 'Object not found') {
-			error(404, { message: `Image /images/${params.path} could not be found!` });
-		} else {
-			error(output.error.status, { message: output.error.message });
-		}
-	} else {
-		return new Response(output.data);
+export const GET: RequestHandler = async ({ params }: { params: { path: string } }) => {
+	const res = await fetch(`${PUBLIC_API_URL}/images/${params.path}`);
+	if (!res.ok) {
+		throw error(res.status, { message: res.statusText });
 	}
+	return new Response(await res.blob());
 };

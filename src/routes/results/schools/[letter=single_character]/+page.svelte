@@ -12,8 +12,8 @@
 	<h1 class="text-center tracking-tight font-bold text-4xl pb-2 pt-12">All Results by School</h1>
 	<AllSchoolLetters {letters} />
 	<div>
-		{#each allData.entries() as s}
-			<ResultSchool name={s[0]} ranks={s[1]} {tournamentNames} />
+		{#each Object.keys(allData) as s}
+			<ResultSchool name={s} ranks={allData[s]} {tournamentNames} />
 		{/each}
 	</div>
 </div>
