@@ -27,10 +27,10 @@ export const handle = async ({ event, resolve }) => {
 			event.locals.user = authJSON.user;
 			event.locals.session = authJSON;
 		} catch (error) {
-			event.locals.access_token = null;
-			event.locals.refresh_token = null;
-			event.locals.user = null;
-			event.locals.session = null;
+			event.locals.access_token = undefined;
+			event.locals.refresh_token = undefined;
+			event.locals.user = undefined;
+			event.locals.session = undefined;
 		}
 	}
 	return await resolve(event);

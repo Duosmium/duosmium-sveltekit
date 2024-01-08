@@ -16,7 +16,7 @@ export async function isAdmin(jwt: string) {
 }
 
 export async function redirectToLoginIfNotLoggedIn(jwt: string | null, next: string) {
-	if (jwt === null) {
+	if (jwt === undefined) {
 		redirect(302, `/auth/login?next=${next}`);
 	}
 }
