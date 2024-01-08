@@ -3,6 +3,7 @@
 	import { buttonVariants } from '$lib/components/ui/button';
 	import { siteConfig } from '$lib/config/site';
 	import { cn } from '$lib/utils';
+	import { DiscordLogo } from 'radix-icons-svelte';
 </script>
 
 <header
@@ -16,6 +17,20 @@
 			<!--				<CommandMenu />-->
 			<!--			</div>-->
 			<nav class="flex items-center">
+				<a href={siteConfig.links.discord} target="_blank" rel="noopener noreferrer">
+					<div
+						class={cn(
+							buttonVariants({
+								size: 'sm',
+								variant: 'ghost'
+							}),
+							'w-9 px-0'
+						)}
+					>
+						<DiscordLogo class="h-4 w-4" />
+						<span class="sr-only">Discord</span>
+					</div>
+				</a>
 				<a href={siteConfig.links.github} target="_blank" rel="noopener noreferrer">
 					<div
 						class={cn(

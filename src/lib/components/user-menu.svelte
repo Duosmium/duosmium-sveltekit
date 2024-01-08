@@ -12,19 +12,14 @@
 	<DropdownMenu.Trigger asChild let:builder>
 		<Button builders={[builder]} variant="ghost" class="w-9 px-0">
 			{#if user === undefined}
-				<Person
-					class="h-[1.2rem] w-[1.2rem] scale-100"
-				/>
+				<Person class="h-[1.2rem] w-[1.2rem] scale-100" />
 			{:else}
-				<Person
-					class="h-[1.2rem] w-[1.2rem] scale-100"
-					color="green"
-				/>
+				<Person class="h-[1.2rem] w-[1.2rem] scale-100" color="green" />
 			{/if}
-<!--			<Avatar.Root class="w-6 h-6">-->
-<!--				<Avatar.Image src="https://github.com/shadcn.png" alt="@shadcn" />-->
-<!--				<Avatar.Fallback>ME</Avatar.Fallback>-->
-<!--			</Avatar.Root>-->
+			<!--			<Avatar.Root class="w-6 h-6">-->
+			<!--				<Avatar.Image src="https://github.com/shadcn.png" alt="@shadcn" />-->
+			<!--				<Avatar.Fallback>ME</Avatar.Fallback>-->
+			<!--			</Avatar.Root>-->
 		</Button>
 	</DropdownMenu.Trigger>
 	<DropdownMenu.Content align="end">

@@ -2,10 +2,7 @@ import type { PageServerLoad, Actions } from './$types';
 import { fail, redirect } from '@sveltejs/kit';
 import { superValidate } from 'sveltekit-superforms/server';
 import { formSchema } from './schema';
-import type { SupabaseClient } from '@supabase/supabase-js';
-import { setFlash } from 'sveltekit-flash-message/server';
 import { PUBLIC_API_URL } from '$env/static/public';
-import { addToast } from '$lib/components/toaster.svelte';
 
 export const load: PageServerLoad = () => {
 	return {

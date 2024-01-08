@@ -20,6 +20,6 @@ export const GET = async (event) => {
 	if (!apiCall.ok) {
 		fail(apiCall.status);
 	}
-	cookies.delete("duosmium-auth-token", {path: "/"});
+	cookies.delete('duosmium-auth-token', { path: '/' });
 	redirect(302, next);
 };
