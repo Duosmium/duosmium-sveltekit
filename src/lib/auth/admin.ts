@@ -1,4 +1,3 @@
-import type { SupabaseClient } from '@supabase/supabase-js';
 import { redirect } from '@sveltejs/kit';
 import { PUBLIC_API_URL } from '$env/static/public';
 
@@ -15,7 +14,7 @@ export async function isAdmin(jwt: string) {
 	return false;
 }
 
-export async function redirectToLoginIfNotLoggedIn(jwt: string | null, next: string) {
+export async function redirectToLoginIfNotLoggedIn(jwt: string | undefined, next: string) {
 	if (jwt === undefined) {
 		redirect(302, `/auth/login?next=${next}`);
 	}

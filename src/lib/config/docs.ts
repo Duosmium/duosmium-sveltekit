@@ -304,12 +304,12 @@ export const docsConfig: DocsConfig = {
 	]
 };
 
-type Example = {
-	name: string;
-	href: string;
-	label?: string;
-	code: string;
-};
+// type Example = {
+// 	name: string;
+// 	href: string;
+// 	label?: string;
+// 	code: string;
+// };
 // export const examples: Example[] = [
 // 	{
 // 		name: 'Dashboard',

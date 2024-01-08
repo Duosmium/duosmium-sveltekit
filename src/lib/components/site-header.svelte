@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Icons, ModeToggle, MainNav, MobileNav, CommandMenu } from '$lib/components';
+	import { Icons, ModeToggle, MainNav, MobileNav, UserMenu } from '$lib/components';
 	import { buttonVariants } from '$lib/components/ui/button';
 	import { siteConfig } from '$lib/config/site';
 	import { cn } from '$lib/utils';
@@ -31,6 +31,7 @@
 					</div>
 				</a>
 				<ModeToggle />
+				<UserMenu />
 			</nav>
 		</div>
 	</div>

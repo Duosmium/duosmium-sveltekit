@@ -41,7 +41,7 @@ export const actions = {
 				}
 			});
 			if (!apiCall.ok) {
-				fail(500);
+				fail(apiCall.status);
 			}
 		}
 		redirect(303, request.url);

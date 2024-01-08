@@ -27,6 +27,7 @@
 	});
 
 	$: updateTheme($config.theme, $page.url.pathname);
+	import type { LayoutServerData } from './$types';
 	import '../app.pcss';
 	import { getFlash } from 'sveltekit-flash-message';
 </script>

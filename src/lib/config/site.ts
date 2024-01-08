@@ -4,7 +4,7 @@ export const siteConfig = {
 	// ogImage: "https://shadcn-svelte.com/og.png",
 	description: 'Duosmium Results',
 	links: {
-		github: 'https://github.com/duosmium/duosmium'
+		github: 'https://github.com/duosmium/duosmium-sveltekit'
 	},
 	keywords: `Duosmium,Duosmium Results,scioly,Science Olympiad,sciolyff,science,stem`
 };
