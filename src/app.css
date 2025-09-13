@@ -1,0 +1,122 @@
+@import 'tailwindcss';
+
+@plugin 'flowbite/plugin';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+	--color-primary-50: #fff5f2;
+	--color-primary-100: #fff1ee;
+	--color-primary-200: #ffe4de;
+	--color-primary-300: #ffd5cc;
+	--color-primary-400: #ffbcad;
+	--color-primary-500: #fe795d;
+	--color-primary-600: #ef562f;
+	--color-primary-700: #eb4f27;
+	--color-primary-800: #cc4522;
+	--color-primary-900: #a5371b;
+
+	--color-secondary-50: #f0f9ff;
+	--color-secondary-100: #e0f2fe;
+	--color-secondary-200: #bae6fd;
+	--color-secondary-300: #7dd3fc;
+	--color-secondary-400: #38bdf8;
+	--color-secondary-500: #0ea5e9;
+	--color-secondary-600: #0284c7;
+	--color-secondary-700: #0369a1;
+	--color-secondary-800: #075985;
+	--color-secondary-900: #0c4a6e;
+}
+
+@source "../node_modules/flowbite-svelte/dist";
+@source "../node_modules/flowbite-svelte-icons/dist";
+
+@layer base {
+	/* disable chrome cancel button */
+	input[type='search']::-webkit-search-cancel-button {
+		display: none;
+	}
+}
+
+@layer components {
+	.clickable button {
+		@apply hover:cursor-pointer hover:underline;
+	}
+	.place-1 {
+		@apply bg-yellow-200;
+	}
+	.place-2 {
+		@apply bg-neutral-200;
+	}
+	.place-3 {
+		@apply bg-stone-400;
+	}
+	.place-4 {
+		@apply bg-yellow-100;
+	}
+	.place-5 {
+		@apply bg-lime-200;
+	}
+	.place-6 {
+		@apply bg-purple-300;
+	}
+	.place-7 {
+		@apply bg-orange-200;
+	}
+	.place-8 {
+		@apply bg-sky-200;
+	}
+	.place-9 {
+		@apply bg-red-200;
+	}
+	.place-10 {
+		@apply bg-indigo-200;
+	}
+	.place-11 {
+		@apply bg-zinc-100;
+	}
+	.place-12 {
+		@apply bg-zinc-100;
+	}
+	.place-13 {
+		@apply bg-zinc-100;
+	}
+	.place-14 {
+		@apply bg-zinc-100;
+	}
+	.place-15 {
+		@apply bg-zinc-100;
+	}
+	.place-16 {
+		@apply bg-neutral-100;
+	}
+	.place-17 {
+		@apply bg-neutral-100;
+	}
+	.place-18 {
+		@apply bg-neutral-100;
+	}
+	.place-19 {
+		@apply bg-neutral-100;
+	}
+	.place-20 {
+		@apply bg-neutral-100;
+	}
+}
+
+@source "../node_modules/simple-datatables/dist";
+@source "../node_modules/@flowbite-svelte-plugins/datatable/dist";
+
+.datatable-pagination .datatable-active a,
+.datatable-pagination .datatable-active a:focus,
+.datatable-pagination .datatable-active a:hover,
+.datatable-pagination .datatable-active button,
+.datatable-pagination .datatable-active button:focus,
+.datatable-pagination .datatable-active button:hover {
+	background-color: #ffe4de;
+	cursor: default;
+}
+
+.datatable-wrapper .datatable-table tbody tr.selected {
+	background-color: #fff1ee !important;
+}
